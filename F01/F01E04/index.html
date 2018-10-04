@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>F01E04</title>
+    <script src="js/vue.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">    
+</head>
+<body>
+    <div id="intro" class="container jumbotron mt-5">
+        <h1>{{productName}}</h1>
+        <p v-html="productDesc"></p>
+        <p v-if="productPrice < 1000">Preço: €{{productPrice}}</p>
+        <p v-if="productAvailability" class="text-success">Disponível</p>
+        <p v-if="!productAvailability" class="text-danger">Indisponível</p>
+        <img :src="productImage" alt="" width="20%" class="rounded">
+        <hr>
+        <button class="btn btn-primary mt-3" @click="reporPreco()" v-if="productPrice < 1000">Repor preço</button>
+        <button class="btn btn-primary mt-3" @click="vender()" v-if="productAvailability">Vender</button>
+    </div>
+
+    <script src="js/vue-instance.js"></script>
+</body>
+</html>
