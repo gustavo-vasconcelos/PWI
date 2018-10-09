@@ -15,7 +15,7 @@
     <div id="intro" class="container mt-5">
         <button class="btn btn-primary" @click="increase">+</button>
         <span>{{ number }}</span>
-        <button class="btn btn-primary" @click="decrease" v-if="number > 0">-</button>
+        <button class="btn btn-primary" @click="decrease" :disabled="number <= 0">-</button>
     </div>
 
     <script src="js/vue-instance.js"></script>

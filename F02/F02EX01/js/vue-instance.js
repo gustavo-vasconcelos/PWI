@@ -12,11 +12,10 @@ const vm = new Vue({
         }
     },
     created: function () {
-        if (!localStorage.getItem("number")) {
-            localStorage.setItem("number", this.number)
+        console.log("Instância criada.")        
+        if (localStorage.getItem("number")) {
+            this.number = parseInt(localStorage.getItem("number"))   
         }
-        console.log("Instância criada.")
-        this.number = parseInt(localStorage.getItem("number"))
     },
     mounted: function () {
         console.log("Instância montada na DOM.")
