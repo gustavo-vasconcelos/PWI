@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>F04E01</title>
+    <script src="js/vue.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+        crossorigin="anonymous">
+</head>
+
+<body>
+    <div id="intro" class="container mt-5">
+        <template>
+            <p :style="styles">{{ msg }}</p>
+        </template>
+        <br>
+        <button @click="changeColor('red')">RED</button>
+        <button @click="changeFontSize()">BIG</button>
+        <button @click="changeColor('yellow')">YELLOW</button>
+        <button @click="toggleVisibility()">SHOW/HIDE</button>
+    </div>
+
+    <script src="js/vue-instance.js"></script>
+</body>
+
+</html>
