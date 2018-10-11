@@ -21,7 +21,10 @@
             <span v-show="styles.color === 'black'">RED</span>
             <span v-show="styles.color === 'red'">BLACK</span>
         </button>
-        <button @click="changeFontSize()">BIG</button>
+        <button @click="toggleFontSize()">
+            <span v-show="styles.fontSize === '12pt'">BIG</span>
+            <span v-show="styles.fontSize === '30pt'">NORMAL</span>
+        </button>
         <button @click="toggleBackgroundColor()">
             <span v-show="styles.backgroundColor === 'transparent'">YELLOW</span>
             <span v-show="styles.backgroundColor === 'yellow'">TRANSPARENT</span>

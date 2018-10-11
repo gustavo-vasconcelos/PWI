@@ -5,7 +5,7 @@ const vm = new Vue({
         styles: {
             fontSize: "12pt",
             color: "black",
-            backgroundColor: "auto",
+            backgroundColor: "transparent",
             display: "inline"
         },
     },
@@ -31,8 +31,16 @@ const vm = new Vue({
                 this.changeBackgroundColor("transparent")
             }
         },
-        changeFontSize: function () {
-            this.styles.fontSize = (this.styles.fontSize === "12pt") ? this.styles.fontSize = "30pt" : this.styles.fontSize = "12pt"
+        changeFontSize: function (size) {
+            this.styles.fontSize = size
+        },
+        toggleFontSize: function() {
+            if (this.styles.fontSize === "12pt") {
+                this.changeFontSize("30pt")
+            } else {
+                this.changeFontSize("12pt")
+            }
+            //this.styles.fontSize = (this.styles.fontSize === "12pt") ? this.changeFontSize("30pt") : this.changeFontSize("12pt")
         },
         toggleVisibility: function () {
             this.styles.display = (this.styles.display === "inline") ? this.styles.display = "none" : this.styles.display = "inline"

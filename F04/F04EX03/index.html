@@ -13,11 +13,19 @@
 
 <body>
     <div id="intro" class="container mt-5">
-        <ul v-if="schools.length">
-            <h2>{{schools.length }} escolas do IPP</h2>
-            <li v-for="school in schools">{{ school }}</li>
+        <table style="border: 1px solid black">
+            <tr>
+                <th>#</th>
+                <th>NAME</th>
+                <th>YEAR</th>
+            </tr>
+            <tr>
+                <th></th>
+            </tr>
+        </table>
+        <ul>
+            <li v-for="team in teams">Name: {{team.name}} AND Year: {{team.year}}</li>
         </ul>
-        <p v-else>SEM ESCOLAS</p>
     </div>
 
     <script src="js/vue-instance.js"></script>
