@@ -17,9 +17,15 @@
             <p :style="styles">{{ msg }}</p>
         </template>
         <br>
-        <button @click="changeColor('red')">RED</button>
+        <button @click="toggleColor()">
+            <span v-show="styles.color === 'black'">RED</span>
+            <span v-show="styles.color === 'red'">BLACK</span>
+        </button>
         <button @click="changeFontSize()">BIG</button>
-        <button @click="changeColor('yellow')">YELLOW</button>
+        <button @click="toggleBackgroundColor()">
+            <span v-show="styles.backgroundColor === 'transparent'">YELLOW</span>
+            <span v-show="styles.backgroundColor === 'yellow'">TRANSPARENT</span>
+        </button>
         <button @click="toggleVisibility()">SHOW/HIDE</button>
     </div>
 
