@@ -13,19 +13,28 @@
 
 <body>
     <div id="intro" class="container mt-5">
-        <table style="border: 1px solid black">
-            <tr>
-                <th>#</th>
-                <th>NAME</th>
-                <th>YEAR</th>
-            </tr>
-            <tr>
-                <th></th>
+        <ul>
+            <li v-for="team in teams">Name: {{ team.name }} AND Year: {{ team.year }}</li>
+        </ul>
+
+        <table class="table table-bordered table-hover" v-if="teams.length">
+            <thead class="thead-dark">
+                <tr>
+                    <th>#</th>
+                    <th>NAME</th>
+                    <th>YEAR</th>
+                </tr>
+            </thead>
+            <tr v-for="(team, index) in teams">
+                <th>{{ index + 1 }}</th>
+                <th>{{ team.name }}</th>
+                <th>{{ team.year }}</th>
             </tr>
         </table>
-        <ul>
-            <li v-for="team in teams">Name: {{team.name}} AND Year: {{team.year}}</li>
-        </ul>
+        <p v-else>Nenhuma equipa encontrada.</p>
+
+        <button @click="addTeam()">Adicionar equipa</button>
+        <button @click="filterByLocation()">Filtrar por localização</button>
     </div>
 
     <script src="js/vue-instance.js"></script>
