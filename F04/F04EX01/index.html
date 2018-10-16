@@ -18,8 +18,8 @@
         </template>
         <br>
         <button @click="toggleColor()">
-            <span v-show="styles.color === 'black'">RED</span>
-            <span v-show="styles.color === 'red'">BLACK</span>
+            <span v-if="styles.color === 'black'">RED</span>
+            <span v-if="styles.color === 'red'">BLACK</span>
         </button>
         <button @click="toggleFontSize()">
             <span v-show="styles.fontSize === '12pt'">BIG</span>
