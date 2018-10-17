@@ -1,20 +1,30 @@
 const vm = new Vue({
     el: "#intro",
     data: {
-        schools: ["ESMAD", "ISEP", "ESE", "ISCAP", "ESTG", "ESS", "ESHT"]
+        schools: ["ESMAD", "ISEP", "ESE", "ISCAP", "ESTG", "ESS", "ESHT"],
+        filterLetter: ""
     },
     methods: {
-        addSchool: function (schoolName) {
-            this.schools.push(schoolName)
+        addSchool() {
+            this.schools.push(prompt("Nome da escola:"))
         },
-        filterByStartingLetter: function (letter) {
-            this.schools = this.schools.filter((school) => {
-                return school[0] == letter
-            })
+        filter() {
+            if (!this.filterLetter) {
+                this.filterLetter = prompt("Primeira letra?")
+            } else {
+                this.filterLetter = ""
+            }
         }
     },
-    created: function () {
-        this.addSchool("ESMAE")
-        this.filterByStartingLetter("E")
+    computed: {
+        printSchools() {
+            if (!this.filterLetter) {
+                return this.schools
+            } else {
+                return this.schools.filter((school) => {
+                    return school.toUpperCase().startsWith(this.filterLetter.toUpperCase())
+                })
+            }
+        }
     }
 })

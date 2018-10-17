@@ -13,13 +13,17 @@
 
 <body>
     <div id="intro" class="container mt-5">
-        <ul v-if="schools.length">
-            <h2>{{schools.length }} escolas do IPP</h2>
-            <li v-for="school in schools">{{ school }}</li>
+        <ul v-if="printSchools.length">
+            <h2>{{printSchools.length }} escolas do IPP</h2>
+            <li v-for="school in printSchools">{{ school }}</li>
         </ul>
         <p v-else>SEM ESCOLAS</p>
+        <button @click="addSchool">Adicionar escola</button>
+        <button @click="filter">
+            <span v-show="!filterLetter">Filtrar</span>
+            <span v-show="filterLetter">Voltar</span>
+        </button>
     </div>
-
     <script src="js/vue-instance.js"></script>
 </body>
 
