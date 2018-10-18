@@ -58,9 +58,12 @@ const vm = new Vue({
         if(localStorage.tasks) {
             this.tasks = JSON.parse(localStorage.getItem("tasks"))            
         }
+    },
+    destroyed() {
+        localStorage.setItem("tasks", JSON.stringify(this.tasks))
     }
 })
 
-function store() {
-    localStorage.setItem("tasks", JSON.stringify(vm.tasks))
+window.onunload = function() {
+    vm.$destroy()
 }
