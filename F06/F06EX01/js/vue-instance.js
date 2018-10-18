@@ -14,6 +14,7 @@ const vm = new Vue({
                 name: this.form.taskName,
                 type: this.form.taskType
             })
+            localStorage.setItem("tasks", JSON.stringify(this.tasks))            
         },
         removeTask(index) {
             swal({
@@ -28,13 +29,12 @@ const vm = new Vue({
                     swal("Tarefa removida.", {
                         icon: "success",
                     })
+                    localStorage.setItem("tasks", JSON.stringify(this.tasks))
                 }
             })
         },
         validateSubmit() {
-            let sameName = this.tasks.some((task) => {
-                return task.name.toLowerCase() == this.form.taskName.toLowerCase()
-            })
+            let sameName = this.tasks.some((task) => task.name.toLowerCase() == this.form.taskName.toLowerCase())
             if (!this.form.taskName) {
                 swal("Erro", "Campo nome obrigatório.", "error")
             } else if (sameName) {
@@ -51,10 +51,13 @@ const vm = new Vue({
             if (!this.filterTaskType) {
                 return this.tasks
             } else {
-                return this.tasks.filter(task => {
-                    return task.type === this.filterTaskType
-                })
+                return this.tasks.filter(task => task.type === this.filterTaskType)
             }
+        }
+    },
+    created() {
+        if(localStorage.tasks) {
+            this.tasks = JSON.parse(localStorage.getItem("tasks"))            
         }
     }
 })
