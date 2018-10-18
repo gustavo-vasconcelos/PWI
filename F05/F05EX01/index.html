@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>F01E04</title>
+    <script src="js/vue.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+        crossorigin="anonymous">
+</head>
+
+<body>
+    <div id="intro" class="container mt-5">
+        <button @click="showMsg">Show msg</button>
+        <button @click="showMessage('Message')">Show message</button>
+
+        <div v-on:click.once="showMsg">
+            <button v-on:click.stop.once="showMsg" @keyup.tab="showMessage('Tab')">CLICA-ME</button>
+        </div>
+    </div>
+
+    <script src="js/vue-instance.js"></script>
+</body>
+
+</html>
