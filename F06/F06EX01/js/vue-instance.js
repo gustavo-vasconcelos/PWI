@@ -25,9 +25,7 @@ const vm = new Vue({
             }).then((willDelete) => {
                 if (willDelete) {
                     this.tasks.splice(index, 1)
-                    swal("Tarefa removida.", {
-                        icon: "success",
-                    })
+                    swal("Tarefa removida", "", "success")
                     localStorage.setItem("tasks", JSON.stringify(this.tasks))
                 }
             })
@@ -55,8 +53,8 @@ const vm = new Vue({
         }
     },
     created() {
-        if(localStorage.tasks) {
-            this.tasks = JSON.parse(localStorage.getItem("tasks"))            
+        if (localStorage.tasks) {
+            this.tasks = JSON.parse(localStorage.getItem("tasks"))
         }
     },
     destroyed() {
@@ -64,6 +62,6 @@ const vm = new Vue({
     }
 })
 
-window.onunload = function() {
+window.onunload = function () {
     vm.$destroy()
 }
