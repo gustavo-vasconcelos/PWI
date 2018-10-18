@@ -14,7 +14,6 @@ const vm = new Vue({
                 name: this.form.taskName,
                 type: this.form.taskType
             })
-            localStorage.setItem("tasks", JSON.stringify(this.tasks))            
         },
         removeTask(index) {
             swal({
@@ -61,3 +60,7 @@ const vm = new Vue({
         }
     }
 })
+
+function store() {
+    localStorage.setItem("tasks", JSON.stringify(vm.tasks))
+}
