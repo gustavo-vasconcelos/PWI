@@ -5,19 +5,15 @@ const vm = new Vue({
         countriesCities: [],
         trips: [],
         form: {
-            continent: {
-                value: "",
-                class: {
-                    'is-invalid': this.missingContinent,
-                    'is-valid': continent.value !== ""
-                },
-            },
+            continent: "",
             country: "",
             cities: [],
             filterCities: "",
             desc: "",
             departureDate: "",
+            departureDateError: "",
             arrivalDate: "",
+            arrivelDateError: "",
             tripType: "vacation",
             urlPhoto: "",
             attemptSubmit: false,
@@ -54,12 +50,13 @@ const vm = new Vue({
             }
             return date.getFullYear() + "-" + mm + "-" + dd
         },
-        validateForm() {
+        validateForm(e) {
+            e.preventDefault()
             this.form.attemptSubmit = true
-            this.addTrip()
+            /*this.addTrip()
             Object.keys(this.form).forEach(key => this.form[key] = "")
             this.form.cities = []
-            this.form.tripType = "vacation"
+            this.form.tripType = "vacation"*/
 
         },
         addTrip() {
@@ -98,8 +95,29 @@ const vm = new Vue({
         }
     },
     computed: {
-        missingContinent() {
-            return this.form.continent === ""
+        continentClass() {
+            return {'is-valid': this.form.continent, 'is-invalid': !this.form.continent && this.form.attemptSubmit}
+        },
+        countryClass() {
+            return {'is-valid': this.form.country, 'is-invalid': !this.form.country && this.form.attemptSubmit}
+        },
+        citiesClass() {
+            return {'is-valid': this.form.cities, 'is-invalid': !this.form.cities && this.form.attemptSubmit}
+        },
+        descClass() {
+            return {'is-valid': this.form.desc, 'is-invalid': !this.form.desc && this.form.attemptSubmit}
+        },
+        departureDateClass() {
+            if(!this.form.departureDate && this.form.attemptSubmit) {
+                this.form.departureDateError = "Selecione a data de partida."
+                return {'is-invalid': true}
+            } else if(this.form.departureDate > this.form.arrivalDate && this.form.arrivalDate) {
+                this.form.departureDateError = "A data de partida tem de ser menor ou igual à data de chegada."
+                return {'is-invalid': true}
+            } else if(this.form.attemptSubmit){
+                return {'is-valid': true}
+            }
+            //return {'is-valid': this.form.desc, 'is-invalid': !this.form.desc && this.form.attemptSubmit}
         },
 
         printTrips() {

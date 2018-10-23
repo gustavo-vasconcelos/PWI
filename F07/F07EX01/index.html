@@ -25,7 +25,8 @@
                     <!-- continent -->
                     <div class="form-group col-12 col-sm-6">
                         <label for="continent">Continente:</label>
-                        <select class="form-control" v-model="form.continent" id="continent" @change="resetFieldCountryCities" :class="form.continent.class">
+                        <select class="form-control" v-model="form.continent" id="continent" @change="resetFieldCountryCities"
+                            :class="continentClass">
                             <option value="">Selecione um</option>
                             <option value="Africa">África</option>
                             <option value="Antarctica">Antártida</option>
@@ -43,12 +44,13 @@
                     <div class="form-group col-12 col-sm-6">
                         <label for="country">País:</label>
                         <select class="form-control" v-model="form.country" id="country" @change="resetFieldCities"
-                            required>
+                            :class="countryClass">
                             <option value="" v-if="!form.continent">Selecione um continente</option>
                             <option value="" v-else>Selecione um</option>
                             <option :value="country.country" v-for="country in countries" v-if="country.continent === form.continent">{{
                                 country.country }}</option>
                         </select>
+                        <div class="invalid-feedback">Selecione um país.</div>
                     </div>
                     <!-- /country -->
 
@@ -61,14 +63,16 @@
                                     v-model="form.filterCities">
                                 <div class="form-check mt-2" style="max-height: 154px; overflow-y: scroll; overflow-x: hidden;">
                                     <div class="row mt-2">
-                                        <div class="col-lg-3 col-md-4 col-sm-6 col-12" v-for="city in countriesCities[form.country]"
+                                        <div class="col-lg-3 col-md-4 col-sm-6 col-12" :class="" v-for="city in countriesCities[form.country]"
                                             v-if="city.toLowerCase().includes(form.filterCities.toLowerCase())">
                                             <input :id="'city' + city" type="checkbox" class="form-check-input" :value="city"
                                                 v-model="form.cities">
-                                            <label :for="'city' + city">{{ city }}</label>
+                                            <label :for="'city' + city" class="form-check-label">{{ city }}</label>
                                         </div>
                                     </div>
                                 </div>
+                                <p v-if="!form.cities.length && form.attemptSubmit" class="text-danger" style="margin-top:.25rem;font-size:80%;">Selecione
+                                    pelo menos uma cidade.</p>
                             </div>
                             <p v-else>Nenhuma cidade encontrada.</p>
                         </div>
@@ -80,23 +84,24 @@
                     <div class="form-group col-12">
                         <label for="tripDesc">Descrição da viagem:</label>
                         <textarea class="form-control" id="tripDesc" rows="3" style="min-height: 100px; max-height: 150px;"
-                            v-model="form.desc" required></textarea>
+                            v-model="form.desc" :class="descClass"></textarea>
+                        <div class="invalid-feedback">Escreva uma descrição.</div>
                     </div>
                     <!-- /desc -->
 
                     <!-- departure date -->
                     <div class="form-group col-12 col-sm-6">
                         <label for="departureDate">Data de partida:</label>
-                        <input type="date" class="form-control" id="departureDate" v-model="form.departureDate" :max="form.arrivalDate"
-                            required>
+                        <input type="date" class="form-control" id="departureDate" v-model="form.departureDate" :max="form.arrivalDate" :class="departureDateClass">
+                        <div class="invalid-feedback">{{ form.departureDateError }}</div>
                     </div>
                     <!-- /departure date -->
 
                     <!-- arrival date -->
                     <div class="form-group col-12 col-sm-6">
                         <label for="arrivalDate">Data de chegada:</label>
-                        <input type="date" class="form-control" id="arrivalDate" v-model="form.arrivalDate" :max="todaysDate()"
-                            required>
+                        <input type="date" class="form-control" id="arrivalDate" v-model="form.arrivalDate" :max="todaysDate()">
+                        <div class="invalid-feedback">{{ form.arrivalDateError }}</div>
                     </div>
                     <!-- /arrival date -->
 
@@ -113,12 +118,12 @@
                     <!-- url photo -->
                     <div class="form-group col-12 mt-2">
                         <label for="urlPhoto">URL foto:</label>
-                        <input type="url" class="form-control" id="urlPhoto" v-model="form.urlPhoto" required>
+                        <input type="url" class="form-control" id="urlPhoto" v-model="form.urlPhoto">
                     </div>
                     <!-- /url photo -->
 
                     <!-- submit btn -->
-                    <input type="submit" class="btn btn-primary col-12" @submit.prevent="validateForm">
+                    <button class="btn btn-primary col-12" @click.prevent="form.attemptSubmit = true">Submeter</button>
                 </form>
                 <hr>
                 <div class="row">
