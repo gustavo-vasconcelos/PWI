@@ -5,7 +5,13 @@ const vm = new Vue({
         countriesCities: [],
         trips: [],
         form: {
-            continent: "",
+            continent: {
+                value: "",
+                class: {
+                    'is-invalid': this.missingContinent,
+                    'is-valid': continent.value !== ""
+                },
+            },
             country: "",
             cities: [],
             filterCities: "",
@@ -13,7 +19,8 @@ const vm = new Vue({
             departureDate: "",
             arrivalDate: "",
             tripType: "vacation",
-            urlPhoto: ""
+            urlPhoto: "",
+            attemptSubmit: false,
         },
         filterTable: {
             continent: "",
@@ -47,26 +54,24 @@ const vm = new Vue({
             }
             return date.getFullYear() + "-" + mm + "-" + dd
         },
-        validateSubmit() {
-            if (!this.form.cities) {
-                swal("Erro", "Selecione pelo menos uma cidade.", "error")
-            } else {
-                this.addTrip()
-                Object.keys(this.form).forEach(key => this.form[key] = "")
-                this.form.cities = []
-                this.form.tripType = "vacation"
-            }
+        validateForm() {
+            this.form.attemptSubmit = true
+            this.addTrip()
+            Object.keys(this.form).forEach(key => this.form[key] = "")
+            this.form.cities = []
+            this.form.tripType = "vacation"
+
         },
         addTrip() {
             this.trips.push({
                 continent: this.form.continent,
                 country: this.form.country,
-                cities: this.cities,
-                desc: this.desc,
-                departureDate: this.departureDate,
-                arrivalDate: this.arrivalDate,
-                tripType: this.tripType,
-                urlPhoto: this.urlPhoto
+                cities: this.form.cities,
+                desc: this.form.desc,
+                departureDate: this.form.departureDate,
+                arrivalDate: this.form.arrivalDate,
+                tripType: this.form.tripType,
+                urlPhoto: this.form.urlPhoto
             })
         },
         removeTrip(index) {
@@ -83,8 +88,20 @@ const vm = new Vue({
                 }
             })
         },
+        uniqueContinents() {
+            let continents = []
+            this.trips.forEach(trip => {
+                if (continents.indexOf(trip.continent === -1))
+                    continents.push(trip.continent)
+            })
+            return continents
+        }
     },
     computed: {
+        missingContinent() {
+            return this.form.continent === ""
+        },
+
         printTrips() {
             if (!this.filterTable.continent && !this.filterTable.date && !this.filterTable.type) {
                 return this.trips
@@ -108,10 +125,10 @@ const vm = new Vue({
         }).catch(err => {
             console.log(err)
         })
-        /*if (localStorage.trips) {
+        if (localStorage.trips) {
             this.trips = JSON.parse(localStorage.trips)
-        }*/
-        this.trips.push({
+        }
+        /*this.trips.push({
             continent: "Europe",
             country: "Portugal",
             cities: ["Maia", "Vila do Conde"],
@@ -120,10 +137,10 @@ const vm = new Vue({
             arrivalDate: "2018-10-10",
             type: "vacation",
             urlPhoto: "http://jornal-renovacao.pt/wp-content/uploads/2015/08/Maia-650x250.jpg"
-        })
+        })*/
     },
     destroyed() {
-        //localStorage.trips = JSON.stringify(this.trips)
+        localStorage.trips = JSON.stringify(this.trips)
     }
 })
 
