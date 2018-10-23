@@ -1,0 +1,23 @@
+.card {
+    cursor: pointer;
+}
+
+@media only screen and (min-width: 576px) {
+    .card-hover .card:hover {
+        -webkit-transform:scale(1.03); /* Safari and Chrome */
+        -moz-transform:scale(1.03); /* Firefox */
+        -ms-transform:scale(1.03); /* IE 9 */
+        -o-transform:scale(1.03); /* Opera */
+        transform:scale(1.03);
+        transition: all .1s ease-in-out;
+    }
+
+    .card-hover .card:not(hover) {
+        -webkit-transform:scale(1); /* Safari and Chrome */
+        -moz-transform:scale(1); /* Firefox */
+        -ms-transform:scale(1); /* IE 9 */
+        -o-transform:scale(1); /* Opera */
+        transform:scale(1);
+        transition: all .1s ease-in-out;
+    }
+}
