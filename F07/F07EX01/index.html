@@ -16,179 +16,190 @@
 </head>
 
 <body>
-    <div id="intro" class="container mt-5">
-        <div class="jumbotron">
-            <h1 class="display-3">MyTravels</h1>
-            <p class="lead">Gestor de viagens</p>
-            <hr>
-            <div class="container">
-                <form class="row" @submit.prevent="validateForm">
-                    <!-- continent -->
-                    <div class="form-group col-12 col-sm-6">
-                        <label for="continent">Continente:</label>
-                        <select class="form-control" v-model="form.continent" id="continent" @change="resetFieldCountryCities" :class="continentClass">
-                            <option value="">Selecione um</option>
-                            <option value="Africa">África</option>
-                            <option value="Asia">Ásia</option>
-                            <option value="Europe">Europa</option>
-                            <option value="North America">América do Norte</option>
-                            <option value="South America">América do Sul</option>
-                            <option value="Oceania">Oceânia</option>
-                        </select>
-                        <div class="invalid-feedback">Selecione um continente.</div>
-                    </div>
-                    <!-- /continent -->
+    <div id="intro">
+        <div class="container mt-5">
+            <div class="jumbotron">
+                <h1 class="display-3">MyTravels</h1>
+                <p class="lead">Gestor de viagens</p>
+                <hr>
+                <div class="container">
+                    <form class="row" @submit.prevent="validateForm">
+                        <!-- continent -->
+                        <div class="form-group col-12 col-sm-6">
+                            <label for="continent">Continente:</label>
+                            <select class="form-control" v-model="form.continent" id="continent" @change="resetFieldCountryCities" :class="continentClass">
+                                <option value="">Selecione um</option>
+                                <option value="Africa">África</option>
+                                <option value="Asia">Ásia</option>
+                                <option value="Europe">Europa</option>
+                                <option value="North America">América do Norte</option>
+                                <option value="South America">América do Sul</option>
+                                <option value="Oceania">Oceânia</option>
+                            </select>
+                            <div class="invalid-feedback">Selecione um continente.</div>
+                        </div>
+                        <!-- /continent -->
 
-                    <!-- country -->
-                    <div class="form-group col-12 col-sm-6">
-                        <label for="country">País:</label>
-                        <select class="form-control" v-model="form.country" id="country" @change="resetFieldCities" :class="countryClass">
-                            <option value="" v-if="!form.continent">Selecione um continente</option>
-                            <option value="" v-else>Selecione um</option>
-                            <option :value="country.country" v-for="country in countries" v-if="country.continent === form.continent">{{ country.country }}</option>
-                        </select>
-                        <div class="invalid-feedback">Selecione um país.</div>
-                    </div>
-                    <!-- /country -->
+                        <!-- country -->
+                        <div class="form-group col-12 col-sm-6">
+                            <label for="country">País:</label>
+                            <select class="form-control" v-model="form.country" id="country" @change="resetFieldCities" :class="countryClass">
+                                <option value="" v-if="!form.continent">Selecione um continente</option>
+                                <option value="" v-else>Selecione um</option>
+                                <option :value="country.country" v-for="country in countries" v-if="country.continent === form.continent">{{ country.country }}</option>
+                            </select>
+                            <div class="invalid-feedback">Selecione um país.</div>
+                        </div>
+                        <!-- /country -->
 
-                    <!-- cities -->
-                    <div class="col-12 mb-2">
-                        <div v-if="form.country">
-                            <label>Cidades:</label>
-                            <div v-if="countriesCities[form.country]">
-                                <input type="text" id="filterCity" class="form-control" placeholder="Filtrar..." v-model="form.filterCities">
-                                <div class="form-check mt-2" style="max-height: 154px; overflow-y: scroll; overflow-x: hidden;">
-                                    <div class="row mt-2">
-                                        <div class="custom-control custom-checkbox col-lg-3 col-md-4 col-sm-6 col-12 mb-3" v-for="city in countriesCities[form.country]"
-                                            v-if="city.toLowerCase().includes(form.filterCities.toLowerCase())">
-                                            <input :id="'city' + city" type="checkbox" class="custom-control-input" :value="city" v-model="form.cities">
-                                            <label :for="'city' + city" class="custom-control-label" :style="{'text-decoration': form.cities.indexOf(city) !== -1 ? 'underline' : 'none currentcolor solid'}">{{ city }}</label>
+                        <!-- cities -->
+                        <div class="col-12 mb-2">
+                            <div v-if="form.country">
+                                <label>Cidades:</label>
+                                <div v-if="countriesCities[form.country]">
+                                    <input type="text" id="filterCity" class="form-control" placeholder="Filtrar..." v-model="form.filterCities">
+                                    <div class="form-check mt-2" style="max-height: 154px; overflow-y: scroll; overflow-x: hidden;">
+                                        <div class="row mt-2">
+                                            <div class="custom-control custom-checkbox col-lg-3 col-md-4 col-sm-6 col-12 mb-3" v-for="city in countriesCities[form.country]"
+                                                v-if="city.toLowerCase().includes(form.filterCities.toLowerCase())">
+                                                <input :id="'city' + city" type="checkbox" class="custom-control-input" :value="city" v-model="form.cities">
+                                                <label :for="'city' + city" class="custom-control-label" :style="{'text-decoration': form.cities.indexOf(city) !== -1 ? 'underline' : 'none currentcolor solid'}">{{ city }}</label>
+                                            </div>
                                         </div>
                                     </div>
+
+                                    <p v-if="!form.cities.length && form.attemptSubmit" class="text-danger" style="margin-top:.25rem;font-size:80%;">Selecione pelo menos uma cidade.</p>
                                 </div>
-
-                                <p v-if="!form.cities.length && form.attemptSubmit" class="text-danger" style="margin-top:.25rem;font-size:80%;">Selecione pelo menos uma cidade.</p>
+                                <p v-else>Nenhuma cidade encontrada.</p>
                             </div>
-                            <p v-else>Nenhuma cidade encontrada.</p>
                         </div>
-                    </div>
-                    <!-- /cities -->
+                        <!-- /cities -->
 
-                    <!-- desc -->
-                    <div class="form-group col-12">
-                        <label for="tripDesc">Descrição da viagem:</label>
-                        <textarea class="form-control" id="tripDesc" rows="3" style="min-height: 100px; max-height: 150px;" v-model="form.desc" :class="descClass"></textarea>
-                        <div class="invalid-feedback">Escreva uma descrição.</div>
-                    </div>
-                    <!-- /desc -->
-
-                    <!-- departure date -->
-                    <div class="form-group col-12 col-sm-6">
-                        <label for="departureDate">Data de partida:</label>
-                        <input type="date" class="form-control" id="departureDate" v-model="form.departureDate" :max="form.arrivalDate" :class="departureDateClass">
-                        <div class="invalid-feedback">{{ form.departureDateError }}</div>
-                    </div>
-                    <!-- /departure date -->
-
-                    <!-- arrival date -->
-                    <div class="form-group col-12 col-sm-6">
-                        <label for="arrivalDate">Data de chegada:</label>
-                        <input type="date" class="form-control" id="arrivalDate" v-model="form.arrivalDate" :max="todaysDate()" :class="arrivalDateClass">
-                        <div class="invalid-feedback">{{ form.arrivalDateError }}</div>
-                    </div>
-                    <!-- /arrival date -->
-
-                    <!-- trip type -->
-                    <div class="col-12">
-                        <span class="mr-2">Tipo de viagem:</span>
-                        <div class="custom-control custom-radio custom-control-inline">
-                            <input type="radio" id="typeVacation" name="typeRadio" class="custom-control-input" value="vacation" v-model="form.tripType">
-                            <label class="custom-control-label" for="typeVacation">Férias</label>
+                        <!-- desc -->
+                        <div class="form-group col-12">
+                            <label for="tripDesc">Descrição da viagem:</label>
+                            <textarea class="form-control" id="tripDesc" rows="3" style="min-height: 100px; max-height: 150px;" v-model="form.desc" :class="descClass"></textarea>
+                            <div class="invalid-feedback">Escreva uma descrição.</div>
                         </div>
-                        <div class="custom-control custom-radio custom-control-inline">
-                            <input type="radio" id="typeWork" name="typeRadio" class="custom-control-input" value="work" v-model="form.tripType">
-                            <label class="custom-control-label" for="typeWork">Trabalho</label>
+                        <!-- /desc -->
+
+                        <!-- departure date -->
+                        <div class="form-group col-12 col-sm-6">
+                            <label for="departureDate">Data de partida:</label>
+                            <input type="date" class="form-control" id="departureDate" v-model="form.departureDate" :max="form.arrivalDate" :class="departureDateClass">
+                            <div class="invalid-feedback">{{ form.departureDateError }}</div>
                         </div>
-                    </div>
-                    <!-- /trip type -->
+                        <!-- /departure date -->
 
-                    <!-- url photo -->
-                    <div class="form-group col-12 mt-2">
-                        <label for="urlPhoto">URL foto:</label>
-                        <input type="url" class="form-control" id="urlPhoto" v-model="form.urlPhoto" :class="urlPhotoClass">
-                        <div class="invalid-feedback">Insira o URL da foto.</div>
-                    </div>
-                    <!-- /url photo -->
+                        <!-- arrival date -->
+                        <div class="form-group col-12 col-sm-6">
+                            <label for="arrivalDate">Data de chegada:</label>
+                            <input type="date" class="form-control" id="arrivalDate" v-model="form.arrivalDate" :max="todaysDate()" :class="arrivalDateClass">
+                            <div class="invalid-feedback">{{ form.arrivalDateError }}</div>
+                        </div>
+                        <!-- /arrival date -->
 
-                    <!-- submit btn -->
-                    <input type="submit" class="btn btn-primary col-12">
-                </form>
-                <hr>
-                <div class="row">
-                    <!-- filtrar por continente -->
-                    <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                        <label for="filterContinent">Continente:</label>
-                        <select class="form-control" id="filterContinent" v-model="filterTrips.continent">
-                            <option value="">Todos</option>
-                            <option :value="continent" v-for="continent in uniqueContinents()">{{ continent }}</option>
-                        </select>
-                    </div>
-                    <!-- /filtrar por continente -->
+                        <!-- trip type -->
+                        <div class="col-12">
+                            <span class="mr-2">Tipo de viagem:</span>
+                            <div class="custom-control custom-radio custom-control-inline">
+                                <input type="radio" id="typeVacation" name="typeRadio" class="custom-control-input" value="vacation" v-model="form.tripType">
+                                <label class="custom-control-label" for="typeVacation">Férias</label>
+                            </div>
+                            <div class="custom-control custom-radio custom-control-inline">
+                                <input type="radio" id="typeWork" name="typeRadio" class="custom-control-input" value="work" v-model="form.tripType">
+                                <label class="custom-control-label" for="typeWork">Trabalho</label>
+                            </div>
+                        </div>
+                        <!-- /trip type -->
 
-                    <!-- filtrar por data -->
-                    <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                        <label for="filterDate">Data:</label>
-                        <input type="date" class="form-control" id="filterDate" :max="todaysDate()" v-model="filterTrips.date">
-                    </div>
-                    <!-- /filtrar por data -->
+                        <!-- url photo -->
+                        <div class="form-group col-12 mt-2">
+                            <label for="urlPhoto">URL foto:</label>
+                            <input type="url" class="form-control" id="urlPhoto" v-model="form.urlPhoto" :class="urlPhotoClass">
+                            <div class="invalid-feedback">Insira o URL da foto.</div>
+                        </div>
+                        <!-- /url photo -->
 
-                    <!-- filtrar por tipo -->
-                    <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                        <label for="filterType">Tipo:</label>
-                        <select class="form-control" id="filterType" v-model="filterTrips.type">
-                            <option value="">Ambos</option>
-                            <option value="vacation">Férias</option>
-                            <option value="work">Trabalho</option>
-                        </select>
-                    </div>
-                    <!-- /filtrar por tipo -->
+                        <!-- submit btn -->
+                        <input type="submit" class="btn btn-primary col-12">
+                    </form>
+                    <hr>
+                    <div class="row">
+                        <!-- filtrar por continente -->
+                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                            <label for="filterContinent">Continente:</label>
+                            <select class="form-control" id="filterContinent" v-model="filterTrips.continent">
+                                <option value="">Todos</option>
+                                <option :value="continent" v-for="continent in uniqueContinents()">{{ continent }}</option>
+                            </select>
+                        </div>
+                        <!-- /filtrar por continente -->
 
-                </div>
-                <div class="row" v-if="printTrips.length">
-                    <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12 mt-4 card-hover" v-for="trip in printTrips">
-                        <div class="card">
-                            <img class="card-img-top" :src="trip.urlPhoto" alt="" style="height: 180px;">
-                            <div class="card-body">
-                                <h5 class="card-title">{{ trip.cities.join(", ") }}.</h5>
-                                <p class="card-text">{{ trip.desc }}</p>
+                        <!-- filtrar por data -->
+                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                            <label for="filterDate">Data:</label>
+                            <input type="date" class="form-control" id="filterDate" :max="todaysDate()" v-model="filterTrips.date">
+                        </div>
+                        <!-- /filtrar por data -->
+
+                        <!-- filtrar por tipo -->
+                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                            <label for="filterType">Tipo:</label>
+                            <select class="form-control" id="filterType" v-model="filterTrips.type">
+                                <option value="">Ambos</option>
+                                <option value="vacation">Férias</option>
+                                <option value="work">Trabalho</option>
+                            </select>
+                        </div>
+                        <!-- /filtrar por tipo -->
+
+                    </div>
+                    <div class="row" v-if="printTrips.length">
+                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12 mt-4 card-hover" v-for="(trip, index) in printTrips">
+                            <div class="card" @click="showModal(index)">
+                                <img class="card-img-top" :src="trip.urlPhoto" alt="" style="height: 180px;">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ trip.cities.join(", ") }}.</h5>
+                                    <p class="card-text">{{ trip.desc }}</p>
+                                </div>
                             </div>
                         </div>
                     </div>
+                    <p v-else>Sem viagens</p>
                 </div>
+            </div>
+        </div>
 
-                <!-- table
-                <div v-if="printTrips.length">
-                    <table class="table table-bordered table-hover" v-if="printTrips">
-                        <thead class="thead-dark">
-                            <tr>
-                                <th>#</th>
-                                <th>Tarefa</th>
-                                <th width="50px"></th>
-                            </tr>
-                        </thead>
-                        <tr v-for="(trip, index) in printTrips">
-                            <th>{{ index + 1 }}</th>
-                            <th>{{ trip }}</th>
-                            <th>
-                                <button class="btn btn-danger" @click="removeTrip(index)">
-                                    <i class="fa fa-times"></i>
-                                </button>
-                            </th>
-                        </tr>
-                    </table>
+        <div class="modal fade" tabindex="-1" role="dialog" id="modal">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Informações sobre a viagem ({{ modalData.tripType === "work" ? 'trabalho' : 'férias ' }})</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                            <h5>{{ modalData.country }}, {{ modalData.continent }}:</h5>
+                        <div class="text-center">
+                            
+                            <img :src="modalData.urlPhoto" alt="" class="img-fluid img-thumbnail">
+                            <p class="mt-1">"{{ modalData.desc }}"</p>
+                        </div>
+                        <div class="row">
+                            <p class="col-12">
+                                <b>{{ modalData.cities.length === 1 ? 'Cidade' : 'Cidades' }}:</b> {{ modalData.cities.join(", ") }}</p>
+                            <p class="col-12 col-sm-6">
+                                <b>Data de partida:</b> {{ modalData.departureDate }}</p>
+                            <p class="col-12 col-sm-6">
+                                <b>Data de chegada:</b> {{ modalData.arrivalDate }}</p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-warning text-white">Editar</button>
+                    </div>
                 </div>
-                <!-- /table -->
-                <p v-else>Sem viagens</p>
             </div>
         </div>
     </div>

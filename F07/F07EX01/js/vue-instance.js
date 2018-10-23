@@ -27,6 +27,16 @@ const vm = new Vue({
         sortTable: {
             country: "",
             departureDate: ""
+        },
+        modalData: {
+            continent: "",
+            country: "",
+            cities: [],
+            desc: "",
+            departureDate: "",
+            arrivalDate: "",
+            tripType: "",
+            urlPhoto: ""
         }
     },
     methods: {
@@ -97,6 +107,10 @@ const vm = new Vue({
                     continents.push(trip.continent)
             })
             return continents
+        },
+        showModal(tripIndex) {
+            $('#modal').modal('show')
+            this.modalData = this.trips[tripIndex]
         }
     },
     computed: {
@@ -248,3 +262,4 @@ window.onunload = function () {
 /*this.trips.push({"continent":"North America","country":"Canada","cities":["Ottawa"],"desc":"Foi muito bom.","departureDate":"2018-10-17","arrivalDate":"2018-10-22","tripType":"work","urlPhoto":"https://1.bp.blogspot.com/-pUQFhWZ7BSE/V1YOsKvGSrI/AAAAAAAABzk/DYieXBbPTtcuhnlbmvRCsY9wAljUAH5tgCKgB/s1600/Ottawa.jpg"})*/
 
 /*this.trips.push({"continent":"Europe","country":"United Kingdom","cities":["London","City of London"],"desc":"Excelente.","departureDate":"2018-10-02","arrivalDate":"2018-10-03","tripType":"work","urlPhoto":"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Super_moon_over_City_of_London_from_Tate_Modern_2018-01-31_4.jpg/1000px-Super_moon_over_City_of_London_from_Tate_Modern_2018-01-31_4.jpg"})*/
+/*this.trips.push({"continent":"Asia","country":"Japan","cities":["Tokyo"],"desc":"Sennen goroshi.","departureDate":"2018-10-23","arrivalDate":"2018-10-23","tripType":"vacation","urlPhoto":"https://upload.wikimedia.org/wikipedia/commons/thumb/c/c0/Tokyo_Tower_and_around_Skyscrapers.jpg/238px-Tokyo_Tower_and_around_Skyscrapers.jpg"})*/
