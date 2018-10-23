@@ -147,3 +147,5 @@ const vm = new Vue({
 window.onunload = function () {
     vm.$destroy()
 }
+
+//https://travishorn.com/form-validation-with-vue-js-4d2e7ba8d2fc
