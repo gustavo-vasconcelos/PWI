@@ -13,12 +13,13 @@ const vm = new Vue({
             departureDate: "",
             departureDateError: "",
             arrivalDate: "",
-            arrivelDateError: "",
+            arrivalDateError: "",
             tripType: "vacation",
             urlPhoto: "",
             attemptSubmit: false,
+            error: false
         },
-        filterTable: {
+        filterTrips: {
             continent: "",
             date: "",
             type: ""
@@ -50,26 +51,30 @@ const vm = new Vue({
             }
             return date.getFullYear() + "-" + mm + "-" + dd
         },
+        hasErrors() {
+            let result = [this.continentClass, this.countryClass, this.citiesClass, this.descClass, this.departureDateClass, this.arrivalDateClass, this.urlPhotoClass]
+            return result.indexOf("is-invalid") !== -1 || !this.form.attemptSubmit
+        },
         validateForm(e) {
             e.preventDefault()
             this.form.attemptSubmit = true
-            /*this.addTrip()
-            Object.keys(this.form).forEach(key => this.form[key] = "")
-            this.form.cities = []
-            this.form.tripType = "vacation"*/
-
-        },
-        addTrip() {
-            this.trips.push({
-                continent: this.form.continent,
-                country: this.form.country,
-                cities: this.form.cities,
-                desc: this.form.desc,
-                departureDate: this.form.departureDate,
-                arrivalDate: this.form.arrivalDate,
-                tripType: this.form.tripType,
-                urlPhoto: this.form.urlPhoto
-            })
+            if (!this.hasErrors()) {
+                this.trips.push({
+                    continent: this.form.continent,
+                    country: this.form.country,
+                    cities: this.form.cities,
+                    desc: this.form.desc,
+                    departureDate: this.form.departureDate,
+                    arrivalDate: this.form.arrivalDate,
+                    tripType: this.form.tripType,
+                    urlPhoto: this.form.urlPhoto
+                })
+                Object.keys(this.form).forEach(key => this.form[key] = "")
+                this.form.cities = []
+                this.form.tripType = "vacation"
+            } else {
+                swal("Erro", "Preencha todos os campos corretamente.", "error")
+            }
         },
         removeTrip(index) {
             swal({
@@ -88,7 +93,7 @@ const vm = new Vue({
         uniqueContinents() {
             let continents = []
             this.trips.forEach(trip => {
-                if (continents.indexOf(trip.continent === -1))
+                if (continents.indexOf(trip.continent) === -1)
                     continents.push(trip.continent)
             })
             return continents
@@ -96,35 +101,83 @@ const vm = new Vue({
     },
     computed: {
         continentClass() {
-            return {'is-valid': this.form.continent, 'is-invalid': !this.form.continent && this.form.attemptSubmit}
+            if (this.form.continent) {
+                return 'is-valid'
+            } else if (this.form.attemptSubmit) {
+                return 'is-invalid'
+            }
         },
         countryClass() {
-            return {'is-valid': this.form.country, 'is-invalid': !this.form.country && this.form.attemptSubmit}
+            if (this.form.country) {
+                return 'is-valid'
+            } else if (this.form.attemptSubmit) {
+                return 'is-invalid'
+            }
         },
         citiesClass() {
-            return {'is-valid': this.form.cities, 'is-invalid': !this.form.cities && this.form.attemptSubmit}
+            if (this.form.cities.length) {
+                return 'is-valid'
+            } else if (this.form.attemptSubmit) {
+                return 'is-invalid'
+            }
         },
         descClass() {
-            return {'is-valid': this.form.desc, 'is-invalid': !this.form.desc && this.form.attemptSubmit}
+            if (this.form.desc) {
+                return 'is-valid'
+            } else if (this.form.attemptSubmit) {
+                return 'is-invalid'
+            }
         },
         departureDateClass() {
-            if(!this.form.departureDate && this.form.attemptSubmit) {
+            if (this.form.departureDate) {
+                return 'is-valid'
+            } else if (!this.form.departureDate && this.form.attemptSubmit) {
                 this.form.departureDateError = "Selecione a data de partida."
-                return {'is-invalid': true}
-            } else if(this.form.departureDate > this.form.arrivalDate && this.form.arrivalDate) {
-                this.form.departureDateError = "A data de partida tem de ser menor ou igual à data de chegada."
-                return {'is-invalid': true}
-            } else if(this.form.attemptSubmit){
-                return {'is-valid': true}
+                return 'is-invalid'
+            } else if (this.form.departureDate > this.form.arrivalDate && this.form.arrivalDate) {
+                this.form.departureDateError = "A data de partida tem de ser inferior ou igual à data de chegada."
+                return 'is-invalid'
+            } else if (this.form.attemptSubmit) {
+                return 'is-valid'
             }
-            //return {'is-valid': this.form.desc, 'is-invalid': !this.form.desc && this.form.attemptSubmit}
         },
-
+        arrivalDateClass() {
+            if (this.form.arrivalDate) {
+                return 'is-valid'
+            } else if (!this.form.arrivalDate && this.form.attemptSubmit) {
+                this.form.arrivalDateError = "Selecione a data de chegada."
+                return 'is-invalid'
+            } else if (this.form.arrivalDate < this.form.departureDate && this.form.departureDate && this.form.arrivalDate) {
+                this.form.arrivalDateError = "A data de chegada tem de ser superior ou igual à data de chegada."
+                return 'is-invalid'
+            } else if (this.form.attemptSubmit) {
+                return 'is-valid'
+            }
+        },
+        urlPhotoClass() {
+            if (this.form.urlPhoto) {
+                return 'is-valid'
+            } else if (this.form.attemptSubmit) {
+                return 'is-invalid'
+            }
+        },
         printTrips() {
-            if (!this.filterTable.continent && !this.filterTable.date && !this.filterTable.type) {
+            if (!this.filterTrips.continent && !this.filterTrips.date && !this.filterTrips.type) {
                 return this.trips
             } else {
-                return this.tasks.filter(task => task.type === this.filterTaskType)
+                return this.trips.filter(trip => {
+                    let result = true
+                    if (this.filterTrips.continent) {
+                        result = trip.continent === this.filterTrips.continent && result
+                    }
+                    if (this.filterTrips.date) {
+                        result = trip.arrivalDate === this.filterTrips.date && result
+                    }
+                    if (this.filterTrips.type) {
+                        result = trip.tripType === this.filterTrips.type && result
+                    }
+                    return result
+                })
             }
         }
     },
@@ -146,16 +199,6 @@ const vm = new Vue({
         if (localStorage.trips) {
             this.trips = JSON.parse(localStorage.trips)
         }
-        /*this.trips.push({
-            continent: "Europe",
-            country: "Portugal",
-            cities: ["Maia", "Vila do Conde"],
-            desc: "Top",
-            departureDate: "2018-10-01",
-            arrivalDate: "2018-10-10",
-            type: "vacation",
-            urlPhoto: "http://jornal-renovacao.pt/wp-content/uploads/2015/08/Maia-650x250.jpg"
-        })*/
     },
     destroyed() {
         localStorage.trips = JSON.stringify(this.trips)
@@ -167,3 +210,41 @@ window.onunload = function () {
 }
 
 //https://travishorn.com/form-validation-with-vue-js-4d2e7ba8d2fc
+
+
+/*this.trips.push({
+    continent: "Europe",
+    country: "Portugal",
+    cities: ["Maia"],
+    desc: "Top",
+    departureDate: "2018-10-01",
+    arrivalDate: "2018-10-10",
+    type: "vacation",
+    urlPhoto: "http://jornal-renovacao.pt/wp-content/uploads/2015/08/Maia-650x250.jpg"
+})*/
+
+/*this.trips.push({
+    continent: "Europe",
+    country: "Portugal",
+    cities: ["Matosinhos Municipality"],
+    desc: "Top",
+    departureDate: "2017-10-01",
+    arrivalDate: "2018-10-10",
+    type: "vacation",
+    urlPhoto: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Edificio_Transparente_2_%28Porto%29.JPG/1200px-Edificio_Transparente_2_%28Porto%29.JPG"
+})*/
+
+/*this.trips.push({
+    continent: "Europe",
+    country: "Portugal",
+    cities: ["Matosinhos Municipality"],
+    desc: "Top",
+    departureDate: "2017-10-01",
+    arrivalDate: "2018-10-10",
+    type: "vacation",
+    urlPhoto: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Edificio_Transparente_2_%28Porto%29.JPG/1200px-Edificio_Transparente_2_%28Porto%29.JPG"
+})*/
+
+/*this.trips.push({"continent":"North America","country":"Canada","cities":["Ottawa"],"desc":"Foi muito bom.","departureDate":"2018-10-17","arrivalDate":"2018-10-22","tripType":"work","urlPhoto":"https://1.bp.blogspot.com/-pUQFhWZ7BSE/V1YOsKvGSrI/AAAAAAAABzk/DYieXBbPTtcuhnlbmvRCsY9wAljUAH5tgCKgB/s1600/Ottawa.jpg"})*/
+
+/*this.trips.push({"continent":"Europe","country":"United Kingdom","cities":["London","City of London"],"desc":"Excelente.","departureDate":"2018-10-02","arrivalDate":"2018-10-03","tripType":"work","urlPhoto":"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Super_moon_over_City_of_London_from_Tate_Modern_2018-01-31_4.jpg/1000px-Super_moon_over_City_of_London_from_Tate_Modern_2018-01-31_4.jpg"})*/
