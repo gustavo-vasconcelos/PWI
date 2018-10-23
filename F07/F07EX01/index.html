@@ -72,7 +72,7 @@
                     <!-- desc -->
                     <div class="form-group col-12">
                         <label for="tripDesc">Descrição da viagem:</label>
-                        <textarea class="form-control" id="tripDesc" rows="3" style="min-height: 100px; max-height: 150px;" required></textarea>
+                        <textarea class="form-control" id="tripDesc" rows="3" style="min-height: 100px; max-height: 150px;" v-model="form.desc" required></textarea>
                     </div>
                     <!-- /desc -->
 
@@ -108,9 +108,44 @@
                     <!-- /url photo -->
 
                     <!-- submit btn -->
-                    <input type="submit" class="btn btn-primary col-12" @click="">
+                    <input type="submit" class="btn btn-primary col-12" @click.prevent="validateSubmit">
                 </form>
                 <hr>
+                <div class="row" v-if="printTrips.length">
+                    <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12 mt-4" v-for="(trip, index) in trips">
+                        <div class="card">
+                            <img class="card-img-top" :src="trip.urlPhoto" alt="">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ trip.cities.join(", ") }}.</h5>
+                                <p class="card-text">{{ trip.desc }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- table
+                <div v-if="printTrips.length">
+                    <table class="table table-bordered table-hover" v-if="printTrips">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>#</th>
+                                <th>Tarefa</th>
+                                <th width="50px"></th>
+                            </tr>
+                        </thead>
+                        <tr v-for="(trip, index) in printTrips">
+                            <th>{{ index + 1 }}</th>
+                            <th>{{ trip }}</th>
+                            <th>
+                                <button class="btn btn-danger" @click="removeTrip(index)">
+                                    <i class="fa fa-times"></i>
+                                </button>
+                            </th>
+                        </tr>
+                    </table>
+                </div>
+                <!-- /table -->
+                <p v-else>Sem viagens</p>
             </div>
         </div>
     </div>
