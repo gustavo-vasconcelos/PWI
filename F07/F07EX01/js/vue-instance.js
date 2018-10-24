@@ -14,8 +14,9 @@ const vm = new Vue({
             departureDateError: "",
             arrivalDate: "",
             arrivalDateError: "",
-            tripType: "vacation",
+            type: "vacation",
             urlPhoto: "",
+            urlPhotoError: "",
             attemptSubmit: false,
             error: false
         },
@@ -24,10 +25,7 @@ const vm = new Vue({
             date: "",
             type: ""
         },
-        sortTable: {
-            country: "",
-            departureDate: ""
-        },
+        sortOption: "",
         modalData: {
             continent: "",
             country: "",
@@ -35,9 +33,10 @@ const vm = new Vue({
             desc: "",
             departureDate: "",
             arrivalDate: "",
-            tripType: "",
-            urlPhoto: ""
-        }
+            type: "",
+            urlPhoto: "",
+            id: 0
+        },
     },
     methods: {
         resetFieldCountryCities() {
@@ -76,41 +75,47 @@ const vm = new Vue({
                     desc: this.form.desc,
                     departureDate: this.form.departureDate,
                     arrivalDate: this.form.arrivalDate,
-                    tripType: this.form.tripType,
-                    urlPhoto: this.form.urlPhoto
+                    type: this.form.type,
+                    urlPhoto: this.form.urlPhoto,
+                    id: this.trips.length ? this.trips[this.trips.length - 1].id : 1
                 })
                 Object.keys(this.form).forEach(key => this.form[key] = "")
                 this.form.cities = []
-                this.form.tripType = "vacation"
+                this.form.type = "vacation"
             } else {
                 swal("Erro", "Preencha todos os campos corretamente.", "error")
             }
         },
-        removeTrip(index) {
+        getTripById(id) {
+            return this.trips.filter((trip, index) => trip.id === id)[0]
+        },
+        getTripIndexById(id) {
+            let tripIndex = -1
+            this.trips.filter((trip, index) => {
+                if (trip.id === id) tripIndex = index
+            })
+            return tripIndex
+        },
+        removeTrip(id) {
             swal({
                 title: "Deseja mesmo remover?",
-                text: `A viagem feita a ${this.trips[index].cities.join(", ")} de ${this.trips[index].departureDate} a ${this.trips[index].arrivalDate} será removida para sempre!`,
+                text: `A viagem feita a ${this.modalData.country} de ${this.modalData.departureDate} a ${this.modalData.arrivalDate} será removida para sempre!`,
                 icon: "warning",
                 buttons: true,
                 dangerMode: true,
             }).then((willDelete) => {
                 if (willDelete) {
-                    this.trips.splice(index, 1)
+                    this.trips.forEach((trip, index) => {
+                        if (trip.id === id) this.trips.splice(index, 1)
+                    })
                     swal("Viagem removida", "", "success")
+                    $('#modal').modal('hide')
                 }
             })
         },
-        uniqueContinents() {
-            let continents = []
-            this.trips.forEach(trip => {
-                if (continents.indexOf(trip.continent) === -1)
-                    continents.push(trip.continent)
-            })
-            return continents
-        },
-        showModal(tripIndex) {
+        showModal(tripId) {
             $('#modal').modal('show')
-            this.modalData = this.trips[tripIndex]
+            this.modalData = this.getTripById(tripId)
         }
     },
     computed: {
@@ -143,37 +148,67 @@ const vm = new Vue({
             }
         },
         departureDateClass() {
-            if (this.form.departureDate) {
-                return 'is-valid'
-            } else if (!this.form.departureDate && this.form.attemptSubmit) {
+            if (!this.form.departureDate && this.form.attemptSubmit) {
                 this.form.departureDateError = "Selecione a data de partida."
                 return 'is-invalid'
             } else if (this.form.departureDate > this.form.arrivalDate && this.form.arrivalDate) {
                 this.form.departureDateError = "A data de partida tem de ser inferior ou igual à data de chegada."
                 return 'is-invalid'
+            } else if (this.form.departureDate) {
+                return 'is-valid'
             } else if (this.form.attemptSubmit) {
                 return 'is-valid'
             }
         },
         arrivalDateClass() {
-            if (this.form.arrivalDate) {
-                return 'is-valid'
-            } else if (!this.form.arrivalDate && this.form.attemptSubmit) {
+            if (!this.form.arrivalDate && this.form.attemptSubmit) {
                 this.form.arrivalDateError = "Selecione a data de chegada."
                 return 'is-invalid'
             } else if (this.form.arrivalDate < this.form.departureDate && this.form.departureDate && this.form.arrivalDate) {
-                this.form.arrivalDateError = "A data de chegada tem de ser superior ou igual à data de chegada."
+                this.form.arrivalDateError = "A data de chegada tem de ser superior ou igual à data de partida."
                 return 'is-invalid'
+            } else if (this.form.arrivalDate) {
+                return 'is-valid'
             } else if (this.form.attemptSubmit) {
                 return 'is-valid'
             }
         },
-        urlPhotoClass() {
-            if (this.form.urlPhoto) {
-                return 'is-valid'
-            } else if (this.form.attemptSubmit) {
-                return 'is-invalid'
+        maxDepartureDate() {
+            if (!this.form.arrivalDate) {
+                return this.todaysDate()
+            } else {
+                return this.form.arrivalDate
             }
+        },
+        minArrivalDate() {
+            if (!this.form.departureDate) {
+                return ""
+            } else {
+                return this.form.departureDate
+            }
+        },
+        urlPhotoClass() {
+            let r = new RegExp(/^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/gm)
+            let result = r.test(this.form.urlPhoto)
+
+            if (!this.form.urlPhoto && this.form.attemptSubmit) {
+                this.form.urlPhotoError = "Insira o URL da foto."
+                return 'is-invalid'
+            } else if (this.form.attemptSubmit && !result) {
+                this.form.urlPhotoError = "URL inválido."
+                return 'is-invalid'
+            } else if (this.form.urlPhoto && result) {
+                this.form.urlPhotoError = "URL inválido."
+                return 'is-valid'
+            }
+        },
+        uniqueContinents() {
+            let continents = []
+            this.trips.forEach(trip => {
+                if (continents.indexOf(trip.continent) === -1)
+                    continents.push(trip.continent)
+            })
+            return continents
         },
         printTrips() {
             if (!this.filterTrips.continent && !this.filterTrips.date && !this.filterTrips.type) {
@@ -188,10 +223,17 @@ const vm = new Vue({
                         result = trip.arrivalDate === this.filterTrips.date && result
                     }
                     if (this.filterTrips.type) {
-                        result = trip.tripType === this.filterTrips.type && result
+                        result = trip.type === this.filterTrips.type && result
                     }
                     return result
                 })
+            }
+        },
+        sortTrips() {
+            switch (this.sortOption) {
+                case "": this.trips.sort(sortById); break
+                case "country": this.trips.sort(sortCountryAlphabetically); break
+                case "departureDate": this.trips.sort(sortDepartureDate); break
             }
         }
     },
@@ -223,43 +265,118 @@ window.onunload = function () {
     vm.$destroy()
 }
 
+function sortById(a, b) {
+    return a.id - b.id
+}
+
+function sortCountryAlphabetically(a, b) {
+    if (a.country < b.country) {
+        return -1
+    }
+    if (a.country > b.country) {
+        return 1
+    }
+    return 0
+}
+
+function sortDepartureDate(a, b) {
+    if (a.departureDate < b.departureDate) {
+        return -1
+    }
+    if (a.departureDate > b.departureDate) {
+        return 1
+    }
+    return 0
+}
+
 //https://travishorn.com/form-validation-with-vue-js-4d2e7ba8d2fc
 
 
-/*this.trips.push({
-    continent: "Europe",
-    country: "Portugal",
-    cities: ["Maia"],
-    desc: "Top",
-    departureDate: "2018-10-01",
-    arrivalDate: "2018-10-10",
-    type: "vacation",
-    urlPhoto: "http://jornal-renovacao.pt/wp-content/uploads/2015/08/Maia-650x250.jpg"
-})*/
+/*
 
-/*this.trips.push({
-    continent: "Europe",
-    country: "Portugal",
-    cities: ["Matosinhos Municipality"],
-    desc: "Top",
-    departureDate: "2017-10-01",
-    arrivalDate: "2018-10-10",
-    type: "vacation",
-    urlPhoto: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Edificio_Transparente_2_%28Porto%29.JPG/1200px-Edificio_Transparente_2_%28Porto%29.JPG"
-})*/
+vm.trips.push({ "continent": "Europe", "country": "Portugal", "cities": ["Maia"], "desc": "Top", "departureDate": "2018-10-01", "arrivalDate": "2018-10-10", "type": "vacation", "urlPhoto": "http://jornal-renovacao.pt/wp-content/uploads/2015/08/Maia-650x250.jpg", "id": 1 })
+vm.trips.push({ "continent": "Europe", "country": "Portugal", "cities": ["Matosinhos Municipality"], "desc": "Top", "departureDate": "2017-10-01", "arrivalDate": "2018-10-10", "type": "vacation", "urlPhoto": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Edificio_Transparente_2_%28Porto%29.JPG/1200px-Edificio_Transparente_2_%28Porto%29.JPG", "id": 2 })
+vm.trips.push({ "continent": "North America", "country": "Canada", "cities": ["Ottawa"], "desc": "Foi muito bom.", "departureDate": "2018-10-17", "arrivalDate": "2018-10-22", "type": "work", "urlPhoto": "https://1.bp.blogspot.com/-pUQFhWZ7BSE/V1YOsKvGSrI/AAAAAAAABzk/DYieXBbPTtcuhnlbmvRCsY9wAljUAH5tgCKgB/s1600/Ottawa.jpg", "id": 3 })
+vm.trips.push({ "continent": "Europe", "country": "United Kingdom", "cities": ["London", "City of London"], "desc": "Excelente.", "departureDate": "2018-10-02", "arrivalDate": "2018-10-03", "type": "work", "urlPhoto": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Super_moon_over_City_of_London_from_Tate_Modern_2018-01-31_4.jpg/1000px-Super_moon_over_City_of_London_from_Tate_Modern_2018-01-31_4.jpg", "id": 4 })
+vm.trips.push({ "continent": "Asia", "country": "Japan", "cities": ["Tokyo"], "desc": "Sennen goroshi.", "departureDate": "2018-10-23", "arrivalDate": "2018-10-23", "type": "vacation", "urlPhoto": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c0/Tokyo_Tower_and_around_Skyscrapers.jpg/238px-Tokyo_Tower_and_around_Skyscrapers.jpg", "id": 5 })
+vm.trips.push({ "continent": "Oceania", "country": "Australia", "cities": ["Sydney"], "desc": "Muito bom.", "departureDate": "2018-10-09", "arrivalDate": "2018-10-23", "type": "work", "urlPhoto": "https://www.telegraph.co.uk/content/dam/Travel/2018/August/sydney.jpg?imwidth=450", "id": 6 })
+vm.trips.push({ "continent": "Africa", "country": "Egypt", "cities": ["Giza"], "desc": "Pirâmides.", "departureDate": "2018-10-11", "arrivalDate": "2018-10-24", "type": "vacation", "urlPhoto": "https://upload.wikimedia.org/wikipedia/commons/a/af/All_Gizah_Pyramids.jpg", "id": 7 })
 
-/*this.trips.push({
-    continent: "Europe",
-    country: "Portugal",
-    cities: ["Matosinhos Municipality"],
-    desc: "Top",
-    departureDate: "2017-10-01",
-    arrivalDate: "2018-10-10",
-    type: "vacation",
-    urlPhoto: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Edificio_Transparente_2_%28Porto%29.JPG/1200px-Edificio_Transparente_2_%28Porto%29.JPG"
-})*/
+class Trip {
+    constructor(continent, country, cities, desc, departureDate, arrivalDate, type, urlPhoto) {
+        this._id = Trip.getLastId() + 1
+        this.country = country
+        this.cities = cities
+        this.desc = desc
+        this.departureDate = departureDate
+        this.arrivalDate = arrivalDate
+        this.type = type
+        this.urlPhoto = urlPhoto
+    }
 
-/*this.trips.push({"continent":"North America","country":"Canada","cities":["Ottawa"],"desc":"Foi muito bom.","departureDate":"2018-10-17","arrivalDate":"2018-10-22","tripType":"work","urlPhoto":"https://1.bp.blogspot.com/-pUQFhWZ7BSE/V1YOsKvGSrI/AAAAAAAABzk/DYieXBbPTtcuhnlbmvRCsY9wAljUAH5tgCKgB/s1600/Ottawa.jpg"})*/
+    get continent() {
+        return this._continent
+    }
+    set continent(value) {
+        this._continent = value
+    }
 
-/*this.trips.push({"continent":"Europe","country":"United Kingdom","cities":["London","City of London"],"desc":"Excelente.","departureDate":"2018-10-02","arrivalDate":"2018-10-03","tripType":"work","urlPhoto":"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Super_moon_over_City_of_London_from_Tate_Modern_2018-01-31_4.jpg/1000px-Super_moon_over_City_of_London_from_Tate_Modern_2018-01-31_4.jpg"})*/
-/*this.trips.push({"continent":"Asia","country":"Japan","cities":["Tokyo"],"desc":"Sennen goroshi.","departureDate":"2018-10-23","arrivalDate":"2018-10-23","tripType":"vacation","urlPhoto":"https://upload.wikimedia.org/wikipedia/commons/thumb/c/c0/Tokyo_Tower_and_around_Skyscrapers.jpg/238px-Tokyo_Tower_and_around_Skyscrapers.jpg"})*/
+    get country() {
+        return this._country
+    }
+    set country(value) {
+        this._country = value
+    }
+
+    get cities() {
+        return this._cities
+    }
+    set cities(value) {
+        this._cities = value
+    }
+
+    get desc() {
+        return this._desc
+    }
+    set desc(value) {
+        this._desc = value
+    }
+
+    get departureDate() {
+        return this._departureDate
+    }
+    set departureDate(value) {
+        this._departureDate = value
+    }
+
+    get arrivalDate() {
+        return this._arrivalDate
+    }
+    set arrivalDate(value) {
+        this._arrivalDate = value
+    }
+
+    get type() {
+        return this._type
+    }
+    set type(value) {
+        this._type = value
+    }
+
+    get urlPhoto() {
+        return this._urlPhoto
+    }
+    set urlPhoto(value) {
+        this._urlPhoto = value
+    }
+
+    get id() {
+        return this._id
+    }
+
+    static getLastId() {
+        if (trips.length) return trips[trips.length - 1].id
+        else return 0
+    }
+}
+*/

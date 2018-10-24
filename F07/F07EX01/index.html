@@ -23,7 +23,7 @@
                 <p class="lead">Gestor de viagens</p>
                 <hr>
                 <div class="container">
-                    <form class="row" @submit.prevent="validateForm">
+                    <form class="row" @submit.prevent="validateForm" novalidate>
                         <!-- continent -->
                         <div class="form-group col-12 col-sm-6">
                             <label for="continent">Continente:</label>
@@ -86,7 +86,7 @@
                         <!-- departure date -->
                         <div class="form-group col-12 col-sm-6">
                             <label for="departureDate">Data de partida:</label>
-                            <input type="date" class="form-control" id="departureDate" v-model="form.departureDate" :max="form.arrivalDate" :class="departureDateClass">
+                            <input type="date" class="form-control" id="departureDate" v-model="form.departureDate" :max="maxDepartureDate" :class="departureDateClass">
                             <div class="invalid-feedback">{{ form.departureDateError }}</div>
                         </div>
                         <!-- /departure date -->
@@ -94,7 +94,8 @@
                         <!-- arrival date -->
                         <div class="form-group col-12 col-sm-6">
                             <label for="arrivalDate">Data de chegada:</label>
-                            <input type="date" class="form-control" id="arrivalDate" v-model="form.arrivalDate" :max="todaysDate()" :class="arrivalDateClass">
+                            <input type="date" class="form-control" id="arrivalDate" v-model="form.arrivalDate" :min="minArrivalDate" :max="todaysDate()"
+                                :class="arrivalDateClass">
                             <div class="invalid-feedback">{{ form.arrivalDateError }}</div>
                         </div>
                         <!-- /arrival date -->
@@ -103,11 +104,11 @@
                         <div class="col-12">
                             <span class="mr-2">Tipo de viagem:</span>
                             <div class="custom-control custom-radio custom-control-inline">
-                                <input type="radio" id="typeVacation" name="typeRadio" class="custom-control-input" value="vacation" v-model="form.tripType">
+                                <input type="radio" id="typeVacation" name="typeRadio" class="custom-control-input" value="vacation" v-model="form.type">
                                 <label class="custom-control-label" for="typeVacation">Férias</label>
                             </div>
                             <div class="custom-control custom-radio custom-control-inline">
-                                <input type="radio" id="typeWork" name="typeRadio" class="custom-control-input" value="work" v-model="form.tripType">
+                                <input type="radio" id="typeWork" name="typeRadio" class="custom-control-input" value="work" v-model="form.type">
                                 <label class="custom-control-label" for="typeWork">Trabalho</label>
                             </div>
                         </div>
@@ -117,7 +118,7 @@
                         <div class="form-group col-12 mt-2">
                             <label for="urlPhoto">URL foto:</label>
                             <input type="url" class="form-control" id="urlPhoto" v-model="form.urlPhoto" :class="urlPhotoClass">
-                            <div class="invalid-feedback">Insira o URL da foto.</div>
+                            <div class="invalid-feedback">{{ form.urlPhotoError }}</div>
                         </div>
                         <!-- /url photo -->
 
@@ -131,7 +132,7 @@
                             <label for="filterContinent">Continente:</label>
                             <select class="form-control" id="filterContinent" v-model="filterTrips.continent">
                                 <option value="">Todos</option>
-                                <option :value="continent" v-for="continent in uniqueContinents()">{{ continent }}</option>
+                                <option :value="continent" v-for="continent in uniqueContinents">{{ continent }}</option>
                             </select>
                         </div>
                         <!-- /filtrar por continente -->
@@ -154,18 +155,31 @@
                         </div>
                         <!-- /filtrar por tipo -->
 
+                        <!-- ordenar -->
+                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                            <label for="sort">Ordenar por:</label>
+                            <select class="form-control" id="sort" v-model="sortOption" @change="sortTrips">
+                                <option value="">Data de inserção</option>
+                                <option value="country">País (ordem alfabética)</option>
+                                <option value="departureDate">Data de partida (ordem crescente)</option>
+                            </select>
+                        </div>
+                        <!-- /ordenar -->
                     </div>
+
+                    <!-- viagens -->
                     <div class="row" v-if="printTrips.length">
                         <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12 mt-4 card-hover" v-for="(trip, index) in printTrips">
-                            <div class="card" @click="showModal(index)">
+                            <div class="card" @click="showModal(trip.id)">
                                 <img class="card-img-top" :src="trip.urlPhoto" alt="" style="height: 180px;">
                                 <div class="card-body">
-                                    <h5 class="card-title">{{ trip.cities.join(", ") }}.</h5>
+                                    <h5 class="card-title">{{ trip.cities.join(", ") }}</h5>
                                     <p class="card-text">{{ trip.desc }}</p>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    <!-- /viagens -->
                     <p v-else>Sem viagens</p>
                 </div>
             </div>
@@ -175,21 +189,22 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Informações sobre a viagem ({{ modalData.tripType === "work" ? 'trabalho' : 'férias ' }})</h5>
+                        <h5 class="modal-title">Informações sobre a viagem ({{ modalData.type === "work" ? 'trabalho' : 'férias' }})</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
-                            <h5>{{ modalData.country }}, {{ modalData.continent }}:</h5>
+                        <h5>{{ modalData.country }}, {{ modalData.continent }}:</h5>
                         <div class="text-center">
-                            
+
                             <img :src="modalData.urlPhoto" alt="" class="img-fluid img-thumbnail">
                             <p class="mt-1">"{{ modalData.desc }}"</p>
                         </div>
                         <div class="row">
                             <p class="col-12">
-                                <b>{{ modalData.cities.length === 1 ? 'Cidade' : 'Cidades' }}:</b> {{ modalData.cities.join(", ") }}</p>
+                                <b>{{ modalData.cities.length === 1 ? 'Cidade' : 'Cidades' }}:</b> {{ modalData.cities.join(",")
+                                }}</p>
                             <p class="col-12 col-sm-6">
                                 <b>Data de partida:</b> {{ modalData.departureDate }}</p>
                             <p class="col-12 col-sm-6">
@@ -198,6 +213,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-warning text-white">Editar</button>
+                        <button type="button" class="btn btn-danger text-white" @click="removeTrip(modalData.id)">Remover</button>
                     </div>
                 </div>
             </div>
