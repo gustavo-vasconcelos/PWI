@@ -335,10 +335,9 @@ function sortDepartureDate(a, b) {
     return 0
 }
 
-//https://travishorn.com/form-validation-with-vue-js-4d2e7ba8d2fc
-
-
 /*
+
+https://travishorn.com/form-validation-with-vue-js-4d2e7ba8d2fc
 
 vm.trips.push({ "continent": "Europe", "country": "Portugal", "cities": ["Maia"], "desc": "Top", "departureDate": "2018-10-01", "arrivalDate": "2018-10-10", "type": "vacation", "urlPhoto": "http://jornal-renovacao.pt/wp-content/uploads/2015/08/Maia-650x250.jpg", "id": 1 })
 vm.trips.push({ "continent": "Europe", "country": "Portugal", "cities": ["Matosinhos Municipality"], "desc": "Top", "departureDate": "2017-10-01", "arrivalDate": "2018-10-10", "type": "vacation", "urlPhoto": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Edificio_Transparente_2_%28Porto%29.JPG/1200px-Edificio_Transparente_2_%28Porto%29.JPG", "id": 2 })
@@ -347,82 +346,4 @@ vm.trips.push({ "continent": "Europe", "country": "United Kingdom", "cities": ["
 vm.trips.push({ "continent": "Asia", "country": "Japan", "cities": ["Tokyo"], "desc": "Sennen goroshi.", "departureDate": "2018-10-23", "arrivalDate": "2018-10-23", "type": "vacation", "urlPhoto": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c0/Tokyo_Tower_and_around_Skyscrapers.jpg/238px-Tokyo_Tower_and_around_Skyscrapers.jpg", "id": 5 })
 vm.trips.push({ "continent": "Oceania", "country": "Australia", "cities": ["Sydney"], "desc": "Muito bom.", "departureDate": "2018-10-09", "arrivalDate": "2018-10-23", "type": "work", "urlPhoto": "https://www.telegraph.co.uk/content/dam/Travel/2018/August/sydney.jpg?imwidth=450", "id": 6 })
 vm.trips.push({ "continent": "Africa", "country": "Egypt", "cities": ["Giza"], "desc": "Pirâmides.", "departureDate": "2018-10-11", "arrivalDate": "2018-10-24", "type": "vacation", "urlPhoto": "https://upload.wikimedia.org/wikipedia/commons/a/af/All_Gizah_Pyramids.jpg", "id": 7 })
-
-class Trip {
-    constructor(continent, country, cities, desc, departureDate, arrivalDate, type, urlPhoto) {
-        this._id = Trip.getLastId() + 1
-        this.country = country
-        this.cities = cities
-        this.desc = desc
-        this.departureDate = departureDate
-        this.arrivalDate = arrivalDate
-        this.type = type
-        this.urlPhoto = urlPhoto
-    }
-
-    get continent() {
-        return this._continent
-    }
-    set continent(value) {
-        this._continent = value
-    }
-
-    get country() {
-        return this._country
-    }
-    set country(value) {
-        this._country = value
-    }
-
-    get cities() {
-        return this._cities
-    }
-    set cities(value) {
-        this._cities = value
-    }
-
-    get desc() {
-        return this._desc
-    }
-    set desc(value) {
-        this._desc = value
-    }
-
-    get departureDate() {
-        return this._departureDate
-    }
-    set departureDate(value) {
-        this._departureDate = value
-    }
-
-    get arrivalDate() {
-        return this._arrivalDate
-    }
-    set arrivalDate(value) {
-        this._arrivalDate = value
-    }
-
-    get type() {
-        return this._type
-    }
-    set type(value) {
-        this._type = value
-    }
-
-    get urlPhoto() {
-        return this._urlPhoto
-    }
-    set urlPhoto(value) {
-        this._urlPhoto = value
-    }
-
-    get id() {
-        return this._id
-    }
-
-    static getLastId() {
-        if (trips.length) return trips[trips.length - 1].id
-        else return 0
-    }
-}
 */
