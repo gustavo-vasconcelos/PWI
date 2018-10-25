@@ -22,6 +22,10 @@
                 <h1 class="display-3">MyTravels</h1>
                 <p class="lead">Gestor de viagens</p>
                 <hr>
+                <div v-if="editId">
+                    <button class="btn btn-warning text-white col-12" @click="cancelEdit">Cancelar edição</button>
+                    <hr>
+                </div>
                 <div class="container">
                     <form class="row" @submit.prevent="validateForm" novalidate>
                         <!-- continent -->
@@ -212,7 +216,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-warning text-white">Editar</button>
+                        <button type="button" class="btn btn-warning text-white" @click="editTrip()">Editar</button>
                         <button type="button" class="btn btn-danger text-white" @click="removeTrip(modalData.id)">Remover</button>
                     </div>
                 </div>

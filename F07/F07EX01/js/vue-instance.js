@@ -37,6 +37,7 @@ const vm = new Vue({
             urlPhoto: "",
             id: 0
         },
+        editId: 0
     },
     methods: {
         resetFieldCountryCities() {
@@ -68,23 +69,54 @@ const vm = new Vue({
             e.preventDefault()
             this.form.attemptSubmit = true
             if (!this.hasErrors()) {
-                this.trips.push({
-                    continent: this.form.continent,
-                    country: this.form.country,
-                    cities: this.form.cities,
-                    desc: this.form.desc,
-                    departureDate: this.form.departureDate,
-                    arrivalDate: this.form.arrivalDate,
-                    type: this.form.type,
-                    urlPhoto: this.form.urlPhoto,
-                    id: this.trips.length ? this.trips[this.trips.length - 1].id : 1
-                })
-                Object.keys(this.form).forEach(key => this.form[key] = "")
-                this.form.cities = []
-                this.form.type = "vacation"
+                if (!this.editId) {
+                    this.trips.push({
+                        continent: this.form.continent,
+                        country: this.form.country,
+                        cities: this.form.cities,
+                        desc: this.form.desc,
+                        departureDate: this.form.departureDate,
+                        arrivalDate: this.form.arrivalDate,
+                        type: this.form.type,
+                        urlPhoto: this.form.urlPhoto,
+                        id: this.trips.length ? this.trips[this.trips.length - 1].id : 1
+                    })
+                    this.clearForm()
+                } else {
+                    swal({
+                        title: "Deseja mesmo atualizar?",
+                        text: `A viagem será alterada.`,
+                        icon: "warning",
+                        buttons: true,
+                        dangerMode: false,
+                    }).then((willEdit) => {
+                        if (willEdit) {
+                            let index = this.getTripIndexById(this.editId)
+                            this.trips[index].continent = this.form.continent
+                            this.trips[index].country = this.form.country
+                            this.trips[index].cities = this.form.cities
+                            this.trips[index].desc = this.form.desc
+                            this.trips[index].departureDate = this.form.departureDate
+                            this.trips[index].arrivalDate = this.form.arrivalDate
+                            this.trips[index].type = this.form.type
+                            this.trips[index].urlPhoto = this.form.urlPhoto
+                            swal("Viagem editada", "", "success")
+                            this.cancelEdit()
+                        }
+                    })
+                }
             } else {
                 swal("Erro", "Preencha todos os campos corretamente.", "error")
             }
+        },
+        clearForm() {
+            Object.keys(this.form).forEach(key => this.form[key] = "")
+            this.form.cities = []
+            this.form.type = "vacation"
+        },
+        cancelEdit() {
+            this.editId = 0
+            this.clearForm()
         },
         getTripById(id) {
             return this.trips.filter((trip, index) => trip.id === id)[0]
@@ -116,6 +148,19 @@ const vm = new Vue({
         showModal(tripId) {
             $('#modal').modal('show')
             this.modalData = this.getTripById(tripId)
+        },
+        editTrip() {
+            $('#modal').modal('hide')
+            window.scrollTo(0, 0);
+            this.form.continent = this.modalData.continent
+            this.form.country = this.modalData.country
+            this.form.cities = this.modalData.cities
+            this.form.desc = this.modalData.desc
+            this.form.departureDate = this.modalData.departureDate
+            this.form.arrivalDate = this.modalData.arrivalDate
+            this.form.type = this.modalData.type
+            this.form.urlPhoto = this.modalData.urlPhoto
+            this.editId = this.modalData.id
         }
     },
     computed: {
@@ -188,7 +233,8 @@ const vm = new Vue({
             }
         },
         urlPhotoClass() {
-            let r = new RegExp(/^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/gm)
+            let r = new RegExp(/^(ftp:\/\/|http:\/\/|https:\/\/)?(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!-\/]))?$/)
+
             let result = r.test(this.form.urlPhoto)
 
             if (!this.form.urlPhoto && this.form.attemptSubmit) {
