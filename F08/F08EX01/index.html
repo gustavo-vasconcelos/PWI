@@ -19,10 +19,14 @@
         <div class="container mt-5">
             <div class="jumbotron">
                 <h1 class="display-3">PortugalCastles</h1>
-                <hr class="my-2">
+                <hr>
+                <div v-if="form.edit">
+                    <button class="btn btn-warning text-white col-12" @click="cancelEdit">Cancelar edição</button>
+                    <hr>
+                </div>
                 <form class="row" @submit.prevent="validateSubmit()">
                     <!-- nome -->
-                    <div class="form-group col-sm-6 col-12 mt-2">
+                    <div class="form-group col-12 mt-2">
                         <label for="name">Nome:</label>
                         <input type="text" class="form-control" id="name" v-model="form.name" required>
                     </div>
@@ -34,10 +38,68 @@
                         <input type="url" class="form-control" id="photo" v-model="form.photo" required>
                     </div>
                     <!-- /url photo -->
-                    
+
+                    <!-- ano -->
+                    <div class="form-group col-sm-6 col-12 mt-2">
+                        <label for="year">Ano de fundação:</label>
+                        <input type="number" min="0" :max="getMaxYear()" class="form-control" id="year" v-model="form.year"
+                            required>
+                    </div>
+                    <!-- /ano -->
+
                     <!-- submit btn -->
-                    <input type="submit" class="btn btn-primary col-12" value="Adicionar castelo">
+                    <div class="text-center col-12">
+                        <input type="submit" class="btn btn-primary col-12" value="Adicionar castelo">
+                    </div>
                 </form>
+                <br>
+                <div v-if="printCastles.length">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Nome</th>
+                                <th>Ano de fundação</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(castle, index) in printCastles">
+                                <td style="width: 5%">{{ index + 1 }}</td>
+                                <td>{{ castle.name }}</td>
+                                <td>{{ castle.year }}</td>
+                                <td class="text-right">
+                                    <button class="btn btn-info"><i class="fa fa-info"></i></button>
+                                    <button class="btn btn-warning" @click="editCastle(castle.name)"><i class="fa fa-edit"></i></button>
+                                    <button class="btn btn-danger" @click="removeCastle(castle.name)"><i class="fa fa-times"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p v-else>Nenhum castelo encontrado.</p>
+
+                <dialog id="editDialog">
+                    <form @submit.prevent="confirmEditForm()" method="dialog">
+                        <div class="row">
+                            <div class="col-12">
+                                <label for="editName">Nome:</label>
+                                <input v-model="editForm.name" type="text" class="form-control" id="editName" required>
+                            </div>
+                            <div class="col-6">
+                                <label for="editName">URL foto:</label>
+                                <input v-model="editForm.photo" type="url" class="form-control" id="editPhoto" required>
+                            </div>
+                            <div class="col-6">
+                                <label for="editYear">Ano de fundação:</label>
+                                <input v-model="editForm.year" type="number" min="0" :max="getMaxYear()" class="form-control" id="editYear" required>
+                            </div>
+                        </div>
+                        <br>
+                        <button class="btn btn-primary" @click="closeDialog()">Fechar</button>
+                        <button type="submit" class="btn btn-warning text-white">Confirmar edição</button>
+                    </form>
+                </dialog>
             </div>
         </div>
     </div>
