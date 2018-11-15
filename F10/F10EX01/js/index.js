@@ -109,7 +109,28 @@ const vm = new Vue({
         obj: {
             Name: ["John", "Peter"],
             Surname: ["M.", "Xhen"],
-            Children: [3, 4]
+            Children: [3, 4],
+            //filter sintaxe
+            //filter: [{heading: key_name, tag: ["select"] OR ["input", "input_type"]}]
+            //example:
+            /*
+            filter: [
+                {heading: Name, tag: ["input", "text"]} will create a <input type="text"> filter for the Name column
+                {heading: Children, tag: ["select"]} will create a combobox filter for the Children column
+            ]
+            */
+            //sort sintaxe
+            //sort: [{heading: key_name, sortOptions: [OPT_1, OPT_2, OPT_3, (...)]}]
+            //where options are:
+            //      1 - alphabetical order (strings)
+            //      2 - inverse alphabetical order (strings)
+            //      3 - crescent order (numbers)
+            //      4 - decrescent order (numbers)
+            //example:
+            /*
+            sort: [{heading: Surname, sortOptions: [1, 2]}] will create a sorting combobox for the Surname heading
+                                                            with 2 options: alphabetical order and inverse alphabetical order 
+            */
         },
         filter: {
             stadium: "",
