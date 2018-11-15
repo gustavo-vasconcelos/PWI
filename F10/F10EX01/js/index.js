@@ -119,6 +119,9 @@ const vm = new Vue({
                 {heading: Children, tag: ["select"]} will create a combobox filter for the Children column
             ]
             */
+            //
+            //
+            //
             //sort sintaxe
             //sort: [{heading: key_name, sortOptions: [OPT_1, OPT_2, OPT_3, (...)]}]
             //where options are:
