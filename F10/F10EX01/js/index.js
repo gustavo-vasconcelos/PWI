@@ -18,20 +18,20 @@ Vue.component("game-soccer-card", {
             return [homeGoals, awayGoals]
         }
     },
-    template: `<div class="card">
-                    <img class="card-img-top" :src="game.stadiumPic">
+    template: `<div class="card px-0">
+                    <img class="card-img-top" :src="game.stadiumPic" style="height: 150px">
                     <div class="card-body">
                     <h5 class="card-title">{{ game.homeTeam + " " + getGoalsPerTeam()[0]}} v {{ getGoalsPerTeam()[1] + " " + game.awayTeam}} ({{ game.stadiumName }})</h5>
                     <hr>
                     <p class="card-text">
-                        <h5>{{ game.homeTeam }}</h5>
+                        <h5 v-show="getGoalsPerTeam()[0]">{{ game.homeTeam }}</h5>
                         <div v-for="goal in game.goals">
                             <div v-if="goal.team === game.homeTeam">
                                 <b>{{goal.minute}}'</b> {{goal.player}}
                             </div>
                         </div>
                         <br>
-                        <h5>{{ game.awayTeam }}</h5>
+                        <h5 v-show="getGoalsPerTeam()[1]">{{ game.awayTeam }}</h5>
                         <div v-for="goal in game.goals">
                             <div v-if="goal.team === game.awayTeam">
                                 <b>{{goal.minute}}'</b> {{goal.player}}
@@ -41,10 +41,76 @@ Vue.component("game-soccer-card", {
                     </div>
                 </div>`
 })
+/*
+Vue.component("color-picker", {
+    data() {
+        return {
+            color: ""
+        }
+    },
+    template: `<input type="color" class="form-control" v-on:change="$emit('color-change', color)">`
+})*/
+
+Vue.component("table-render", {
+    props: ["obj"],
+    data() {
+        return {
+            tableHeadings: [],
+            tableColumns: [],
+            tableRows: []
+        }
+    },
+    methods: {
+        getInfo() {
+            Object.keys(this.obj).forEach(key => {
+                this.tableHeadings.push(key)
+                this.tableColumns.push(this.obj[key])
+            })
+        },
+        getRows() {
+            this.tableColumns.forEach(column => {
+                if (Array.isArray(column)) {
+                    column.forEach((value, index) => {
+                        if (!Array.isArray(this.tableRows[index])) {
+                            this.tableRows[index] = []
+                        }
+                        this.tableRows[index].push(value)
+                    })
+                } else {
+                    if (!Array.isArray(this.tableRows[0])) {
+                        this.tableRows[0] = []
+                    }
+                    this.tableRows[0].push(column)
+                }
+            })
+        }
+    },
+    mounted() {
+        this.getInfo()
+        this.getRows()
+    },
+    template: `<table class="table table-striped table-hover mt-3">
+                    <thead>
+                        <tr>
+                            <th v-for="heading in tableHeadings">{{ heading }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(row, index) in tableRows">
+                            <td v-for="element in tableRows[index]">{{ element }}</td>
+                        </tr>
+                    </tbody>
+                </table>`
+})
 
 const vm = new Vue({
     el: "#app",
     data: {
+        obj: {
+            Name: ["John", "Peter"],
+            Surname: ["M.", "Xhen"],
+            Children: [3, 4]
+        },
         filter: {
             stadium: "",
             team: ""
@@ -109,10 +175,53 @@ const vm = new Vue({
                         player: "Otávio"
                     }
                 ]
+            },
+            {
+                id: 3,
+                date: "2018-11-06",
+                stadiumName: "Stadio Giuseppe Meazza",
+                stadiumPic: "https://www.spaziocalcio.it/contents/uploads/2016/12/Stadio-Giuseppe-Meazza-San-Siro-Milano-2016.jpg",
+                homeTeam: "Inter",
+                awayTeam: "Barcelona",
+                goals: [
+                    {
+                        minute: 83,
+                        team: "Barcelona",
+                        player: "Malcom de Oliveira"
+                    },
+                    {
+                        minute: 87,
+                        team: "Inter",
+                        player: "Mauro Icardi"
+                    }
+                ]
+            },
+            {
+                id: 4,
+                date: "2018-11-06",
+                stadiumName: "Wanda Metropolitano",
+                stadiumPic: "https://images.performgroup.com/di/library/GOAL/33/a1/wanda-metropolitano-atletico_5d8r4d22tz3p1hvscjkpu4lks.jpg?t=2144583606&quality=90&w=1280",
+                homeTeam: "Atlético de Madrid",
+                awayTeam: "Borussia Dortmund",
+                goals: [
+                    {
+                        minute: 33,
+                        team: "Atlético de Madrid",
+                        player: "Saúl Ñíguez"
+                    },
+                    {
+                        minute: 80,
+                        team: "Atlético de Madrid",
+                        player: "Antoine Griezmann"
+                    }
+                ]
             }
         ]
     },
     methods: {
+        haha() {
+            console.log(true)
+        },
         getStadiums() {
             let stadiums = []
             this.games.forEach(game => {
@@ -120,6 +229,7 @@ const vm = new Vue({
                     stadiums.push(game.stadiumName)
                 }
             })
+            stadiums.sort()
             return stadiums
         },
         getTeams() {
@@ -132,6 +242,7 @@ const vm = new Vue({
                     teams.push(game.awayTeam)
                 }
             })
+            teams.sort()
             return teams
         }
     },
