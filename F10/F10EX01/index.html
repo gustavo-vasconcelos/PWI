@@ -31,11 +31,13 @@
         </div>
 
         <br>
-        <div class="row">
-            <game-soccer-card class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12 p-0 mx-2" v-for="game in printGames"
-                :game="game" :key="game.id">
-            </game-soccer-card>
-
+        <div>
+            <div v-if="printGames.length" class="row">
+                <game-soccer-card class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12 p-0 mx-2" v-for="game in printGames"
+                    :game="game" :key="game.id">
+                </game-soccer-card>
+            </div>
+            <div class="alert alert-danger" role="alert" v-else>No matches found.</div>
         </div>
 
     </div>

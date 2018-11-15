@@ -146,14 +146,8 @@ const vm = new Vue({
                         result = game.stadiumName === this.filter.stadium && result
                     }
                     if (this.filter.team) {
-                        if (game.homeTeam === this.filter.team) {
-                            result = game.homeTeam === this.filter.team && result
-                            console.log("away: " + game.homeTeam + ". result: " + result)
-                        }
-                        if (game.awayTeam === this.filter.team) {
-                            result = game.awayTeam === this.filter.team && result
-                            console.log("away: " + game.awayTeam + ". result: " + result)
-                        }
+                        let teams = [game.homeTeam, game.awayTeam]
+                        result = teams.some(team => team === this.filter.team) && result
                     }
                     return result
                 })
