@@ -57,14 +57,30 @@ Vue.component("table-render", {
         return {
             tableHeadings: [],
             tableColumns: [],
-            tableRows: []
+            tableRows: [],
+            filterOptions: [],
+            sortOptions: [],
         }
     },
     methods: {
         getInfo() {
             Object.keys(this.obj).forEach(key => {
-                this.tableHeadings.push(key)
-                this.tableColumns.push(this.obj[key])
+                if (key === "filter") {
+                    if (!this.filterOptions.length) {
+                        this.filterOptions = this.obj[key]
+                    } else {
+                        this.filterOptions.push(this.obj[key])
+                    }
+                } else if (key === "sort") {
+                    if (!this.sortOptions.length) {
+                        this.sortOptions = this.obj[key]
+                    } else {
+                        this.sortOptions.push(this.obj[key])
+                    }
+                } else {
+                    this.tableHeadings.push(key)
+                    this.tableColumns.push(this.obj[key])
+                }
             })
         },
         getRows() {
@@ -83,24 +99,84 @@ Vue.component("table-render", {
                     this.tableRows[0].push(column)
                 }
             })
+        },
+        getOptions() {
+            if (this.filterOptions.length) {
+                this.filterOptions.forEach(filter => {
+                    Object.keys(filter).forEach(option => {
+                        /*
+                        if (option === "heading") {
+                            if (!this.filterOptions.length) {
+                                this.filterOptions = this.obj[key]
+                            } else {
+                                this.filterOptions.push(this.obj[key])
+                            }
+                        } else if (key === "sort") {
+                            if (!this.sortOptions.length) {
+                                this.sortOptions = this.obj[key]
+                            } else {
+                                this.sortOptions.push(this.obj[key])
+                            }
+                        } else {
+                            this.tableHeadings.push(key)
+                            this.tableColumns.push(this.obj[key])
+                        }
+                        */
+                    })
+                })
+            }
         }
     },
     mounted() {
         this.getInfo()
         this.getRows()
+        this.getOptions()
     },
-    template: `<table class="table table-striped table-hover mt-3">
-                    <thead>
-                        <tr>
-                            <th v-for="heading in tableHeadings">{{ heading }}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="(row, index) in tableRows">
-                            <td v-for="element in tableRows[index]">{{ element }}</td>
-                        </tr>
-                    </tbody>
-                </table>`
+    template: `<div>
+                <table-filter
+                    v-if="filterOptions.length"
+                    :options="filterOptions"
+                    :headerElements="tableHeadings"
+                    :columnElements="tableColumns">
+                </table-filter>
+                <table-sort v-if="sortOptions.length" :options="sortOptions"></table-sort>
+                <table class="table table-striped table-hover mt-3">
+                        <thead>
+                            <tr>
+                                <th v-for="heading in tableHeadings">{{ heading }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(row, index) in tableRows">
+                                <td v-for="element in tableRows[index]">{{ element }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>`
+})
+
+Vue.component("table-filter", {
+    data() {
+        return {
+            html: ""
+        }
+    },
+    props: ["options", "headerElements", "columnElements"],
+    mounted() {
+        this.options.forEach(filter => {
+            this.headerElements.forEach(header => {
+                if(header === filter.heading) {
+
+                }
+            })
+        })
+    },
+    template: `<div v-for=""></div>`
+})
+
+Vue.component("table-sort", {
+    props: ["options"],
+    template: `<div></div>`
 })
 
 const vm = new Vue({
@@ -110,6 +186,10 @@ const vm = new Vue({
             Name: ["John", "Peter"],
             Surname: ["M.", "Xhen"],
             Children: [3, 4],
+            filter: [
+                { heading: "Name", tag: ["input", "text"] },
+                { heading: "Children", tag: ["select"] }
+            ]
             //filter sintaxe
             //filter: [{heading: key_name, tag: ["select"] OR ["input", "input_type"]}]
             //example:
