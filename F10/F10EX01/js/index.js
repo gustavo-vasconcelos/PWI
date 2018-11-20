@@ -99,79 +99,78 @@ Vue.component("table-render", {
                     this.tableRows[0].push(column)
                 }
             })
-        },
-        getOptions() {
-            if (this.filterOptions.length) {
-                this.filterOptions.forEach(filter => {
-                    Object.keys(filter).forEach(option => {
-                        /*
-                        if (option === "heading") {
-                            if (!this.filterOptions.length) {
-                                this.filterOptions = this.obj[key]
-                            } else {
-                                this.filterOptions.push(this.obj[key])
-                            }
-                        } else if (key === "sort") {
-                            if (!this.sortOptions.length) {
-                                this.sortOptions = this.obj[key]
-                            } else {
-                                this.sortOptions.push(this.obj[key])
-                            }
-                        } else {
-                            this.tableHeadings.push(key)
-                            this.tableColumns.push(this.obj[key])
-                        }
-                        */
-                    })
-                })
-            }
         }
     },
     mounted() {
         this.getInfo()
         this.getRows()
-        this.getOptions()
     },
     template: `<div>
-                <table-filter
-                    v-if="filterOptions.length"
-                    :options="filterOptions"
-                    :headerElements="tableHeadings"
-                    :columnElements="tableColumns">
-                </table-filter>
-                <table-sort v-if="sortOptions.length" :options="sortOptions"></table-sort>
-                <table class="table table-striped table-hover mt-3">
-                        <thead>
-                            <tr>
-                                <th v-for="heading in tableHeadings">{{ heading }}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="(row, index) in tableRows">
-                                <td v-for="element in tableRows[index]">{{ element }}</td>
-                            </tr>
-                        </tbody>
+                    <table-filter
+                        v-if="filterOptions.length"
+                        :options="filterOptions"
+                        :headerElements="tableHeadings"
+                        :columnElements="tableColumns">
+                    </table-filter>
+                    <table-sort v-if="sortOptions.length" :options="sortOptions"></table-sort>
+                    <table class="table table-striped table-hover mt-3">
+                            <thead>
+                                <tr>
+                                    <th v-for="heading in tableHeadings">{{ heading }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(row, index) in tableRows">
+                                    <td v-for="element in tableRows[index]">{{ element }}</td>
+                                </tr>
+                            </tbody>
                     </table>
                 </div>`
 })
 
 Vue.component("table-filter", {
-    data() {
-        return {
-            html: ""
+    props: ["options", "headerElements", "columnElements"],
+    methods: {
+        test(e){
+            console.log(e)
         }
     },
-    props: ["options", "headerElements", "columnElements"],
-    mounted() {
-        this.options.forEach(filter => {
-            this.headerElements.forEach(header => {
-                if(header === filter.heading) {
+    template: `<div>
+                    <filter-element
+                        :options="options"
+                        :headerElements="headerElements"
+                        :columnElements="columnElements"
+                        :index="index" v-for="(filter, index) in options"
+                        :key="'filter' + index"
+                        @filterChange="test($event)"
+                    />
+                </div>`
+})
 
-                }
-            })
-        })
+Vue.component("filter-element", {
+    props: ["options", "headerElements", "columnElements", "index"],
+    data() {
+        return {
+            filterValue: ""
+        }
     },
-    template: `<div v-for=""></div>`
+    computed: {
+        filtered() {
+            return [this.index, this.filterValue]
+        },
+        uniqueElement() {
+            //here
+        }
+    },
+    template: `<div class="mt-1">
+                    <select class="form-control" @change="$emit('filterChange', filtered)" v-model="filterValue"  v-if="options[index].tag[0] === 'select'">
+                        <option value="">Filter by {{ options[index].heading.toLowerCase() }}</option>
+                        <template v-for="element in columnElements[index + 1]">
+                            <option :value="element" v-if="uniqueElement">{{element}}</option>
+                        </template>
+                    </select>
+                    <input v-else :type="options[index].tag[1]" class="form-control" :placeholder="'Filter by ' + options[index].heading.toLowerCase()">
+                </div>`
 })
 
 Vue.component("table-sort", {
@@ -183,9 +182,9 @@ const vm = new Vue({
     el: "#app",
     data: {
         obj: {
-            Name: ["John", "Peter"],
-            Surname: ["M.", "Xhen"],
-            Children: [3, 4],
+            Name: ["John", "Peter", "Michael", "Joseph", "John"],
+            Surname: ["M.", "Xhen", "William", "Turin", "Doe"],
+            Children: [3, 4, 4, 3, 2],
             filter: [
                 { heading: "Name", tag: ["input", "text"] },
                 { heading: "Children", tag: ["select"] }
