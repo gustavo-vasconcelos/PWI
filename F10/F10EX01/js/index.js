@@ -41,15 +41,15 @@ Vue.component("game-soccer-card", {
                     </div>
                 </div>`
 })
-/*
+
 Vue.component("color-picker", {
     data() {
         return {
-            color: ""
+            color: "#eee"
         }
     },
-    template: `<input type="color" class="form-control" v-on:change="$emit('color-change', color)">`
-})*/
+    template: `<input type="color" class="form-control" @change="$emit('colorchanged', color)" v-model="color">`
+})
 
 Vue.component("table-render", {
     props: ["obj"],
@@ -60,6 +60,7 @@ Vue.component("table-render", {
             tableRows: [],
             filterOptions: [],
             sortOptions: [],
+            filterValues: []
         }
     },
     methods: {
@@ -99,14 +100,30 @@ Vue.component("table-render", {
                     this.tableRows[0].push(column)
                 }
             })
+        },
+        getFilterValues(value) {
+            let headingIndex = this.tableHeadings.findIndex(heading => heading === value[0])
+            let filterOptionIndex = this.filterOptions.findIndex(filterOptions => filterOptions.heading === value[0])
+            this.filterValues[filterOptionIndex] = {
+                headingIndex,
+                value: value[1]
+            }
         }
     },
     mounted() {
         this.getInfo()
         this.getRows()
     },
+    computed: {
+        printValues() {
+            this.filterValues.forEach(filterV => {
+            })
+            
+        }
+    },
     template: `<div>
                     <table-filter
+                        @changefilterstage2="getFilterValues($event)"
                         v-if="filterOptions.length"
                         :options="filterOptions"
                         :headerElements="tableHeadings"
@@ -131,7 +148,7 @@ Vue.component("table-render", {
 Vue.component("table-filter", {
     props: ["options", "headerElements", "columnElements"],
     methods: {
-        test(e){
+        test(e) {
             console.log(e)
         }
     },
@@ -142,7 +159,7 @@ Vue.component("table-filter", {
                         :columnElements="columnElements"
                         :index="index" v-for="(filter, index) in options"
                         :key="'filter' + index"
-                        @filterChange="test($event)"
+                        @changefilterstage1="$emit('changefilterstage2', $event)"
                     />
                 </div>`
 })
@@ -151,25 +168,38 @@ Vue.component("filter-element", {
     props: ["options", "headerElements", "columnElements", "index"],
     data() {
         return {
-            filterValue: ""
+            filteredValue: ""
         }
     },
     computed: {
         filtered() {
             return [this.index, this.filterValue]
         },
-        uniqueElement() {
-            //here
+        uniqueElements() {
+            let elements = []
+            this.columnElements[this.index + 1].forEach((element, index) => {
+                if (elements.indexOf(element) === -1) {
+                    elements.push(element)
+                }
+            }) 
+            return elements.sort(sortNumber)
         }
     },
     template: `<div class="mt-1">
-                    <select class="form-control" @change="$emit('filterChange', filtered)" v-model="filterValue"  v-if="options[index].tag[0] === 'select'">
+                    <select class="form-control" v-model="filteredValue"  v-if="options[index].tag[0] === 'select'" @change="$emit('changefilterstage1', [options[index].heading, filteredValue])">
                         <option value="">Filter by {{ options[index].heading.toLowerCase() }}</option>
-                        <template v-for="element in columnElements[index + 1]">
-                            <option :value="element" v-if="uniqueElement">{{element}}</option>
+                        <template v-for="element in uniqueElements">
+                            <option :value="element" v-if="uniqueElements">{{element}}</option>
                         </template>
                     </select>
-                    <input v-else :type="options[index].tag[1]" class="form-control" :placeholder="'Filter by ' + options[index].heading.toLowerCase()">
+                    <input
+                        v-else 
+                        :type="options[index].tag[1]"
+                        class="form-control"
+                        :placeholder="'Filter by ' + options[index].heading.toLowerCase()"
+                        @keyup="$emit('changefilterstage1', [options[index].heading, filteredValue])"
+                        v-model="filteredValue"
+                    >
                 </div>`
 })
 
@@ -319,11 +349,12 @@ const vm = new Vue({
                     }
                 ]
             }
-        ]
+        ],
+        backgroundColor: "#eee"
     },
     methods: {
-        haha() {
-            console.log(true)
+        changeBackgroundColor(color) {
+            this.backgroundColor = color
         },
         getStadiums() {
             let stadiums = []
@@ -347,6 +378,9 @@ const vm = new Vue({
             })
             teams.sort()
             return teams
+        },
+        test(e) {
+            console.log(e)
         }
     },
     computed: {
@@ -369,3 +403,7 @@ const vm = new Vue({
         }
     }
 })
+
+function sortNumber(a, b) {
+    return a - b
+}

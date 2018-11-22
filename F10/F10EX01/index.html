@@ -16,7 +16,7 @@
 
 <body>
     <div id="app" class="container mt-5">
-        <div class="jumbotron">
+        <div class="jumbotron" :style="{backgroundColor}">
             <show-page text="Click me" link="http://google.pt" class="col-12"></show-page>
             <br>
             <br>
@@ -38,7 +38,8 @@
                 <game-soccer-card v-for="game in printGames" :game="game" :key="game.id" class="mt-3 col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12"></game-soccer-card>
             </div>
             <div class="alert alert-danger mt-3" role="alert" v-else>No matches found.</div>
-            <table-render :obj="obj"></table-render>
+            <color-picker @colorchanged="changeBackgroundColor($event)"></color-picker>            
+            <table-render :obj="obj" @changeFilterStage2="($event)"></table-render>
 
         </div>
     </div>
