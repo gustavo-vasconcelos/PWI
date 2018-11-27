@@ -60,7 +60,8 @@ Vue.component("table-render", {
             tableRows: [],
             filterOptions: [],
             sortOptions: [],
-            filterValues: []
+            filterValues: [],
+            filterChanged: 0
         }
     },
     methods: {
@@ -108,6 +109,7 @@ Vue.component("table-render", {
                 headingIndex,
                 value: value[1]
             }
+            this.filterChanged = !this.filterChanged ? 1 : 0
         }
     },
     mounted() {
@@ -116,9 +118,22 @@ Vue.component("table-render", {
     },
     computed: {
         printValues() {
-            this.filterValues.forEach(filterV => {
-            })
-            
+            this.filterChanged
+            if (!this.filterValues.length || this.filterValues.every(filterV => !filterV.value)) {
+                return this.tableRows
+            } else {
+                return this.tableRows.filter(row => {
+                    let result = true
+                    this.filterValues.forEach(filterV => {
+                        if(typeof filterV.value === "string" && typeof row[filterV.headingIndex] === "string") {
+                            result = row[filterV.headingIndex].toLowerCase().includes(filterV.value.toLowerCase()) && result
+                        } else if(typeof row[filterV.headingIndex] === "number") {
+                            result = row[filterV.headingIndex] == filterV.value && result
+                        }
+                    })
+                    return result
+                })
+            }
         }
     },
     template: `<div>
@@ -137,8 +152,8 @@ Vue.component("table-render", {
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="(row, index) in tableRows">
-                                    <td v-for="element in tableRows[index]">{{ element }}</td>
+                                <tr v-for="(row, index) in printValues">
+                                    <td v-for="element in printValues[index]">{{ element }}</td>
                                 </tr>
                             </tbody>
                     </table>
@@ -172,16 +187,13 @@ Vue.component("filter-element", {
         }
     },
     computed: {
-        filtered() {
-            return [this.index, this.filterValue]
-        },
         uniqueElements() {
             let elements = []
-            this.columnElements[this.index + 1].forEach((element, index) => {
+            this.columnElements[this.index + 1].forEach(element => {
                 if (elements.indexOf(element) === -1) {
                     elements.push(element)
                 }
-            }) 
+            })
             return elements.sort(sortNumber)
         }
     },
@@ -216,6 +228,7 @@ const vm = new Vue({
             Surname: ["M.", "Xhen", "William", "Turin", "Doe"],
             Children: [3, 4, 4, 3, 2],
             filter: [
+                { heading: "Surname", tag: ["select"] },
                 { heading: "Name", tag: ["input", "text"] },
                 { heading: "Children", tag: ["select"] }
             ]
