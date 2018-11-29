@@ -1,5 +1,5 @@
 <template>
-  <div class="container jumbotron">
+  <div class="container jumbotron text-left">
     <b-card
       :title="$parent.actors[index].name"
       :img-src="$parent.actors[index].photo"
@@ -11,9 +11,15 @@
     >
       <p class="card-text">Nationality: {{ $parent.actors[index].nationality }}</p>
       <p class="card-text">Age: {{ $parent.getAgeById($parent.actors[index].id) }}</p>
-      <b-button :href="'https://www.imdb.com/name/' + $parent.actors[index].imdb" variant="primary">IMDB</b-button>
+      <a
+        :href="'https://www.imdb.com/name/' + $parent.actors[index].imdb"
+        target="_blank"
+        class="btn btn-primary col-12"
+      >IMDB</a>
     </b-card>
-    <router-link :to="'/actor/' + $route.params.id">Back</router-link>
+    <div class="text-center">
+      <router-link :to="`/actor/${$route.params.id}-${$route.params.name}`">Back</router-link>
+    </div>
   </div>
 </template>
 
@@ -23,12 +29,6 @@ export default {
     return {
       index: this.findIndexById(parseInt(this.$route.params.id))
     };
-  },
-  beforeRouteUpdate(to, from, next) {
-    this.index = this.$parent.actors.findIndex(
-      actor => actor.id === parseInt(to.params.id)
-    );
-    next();
   },
   methods: {
     findIndexById(id) {

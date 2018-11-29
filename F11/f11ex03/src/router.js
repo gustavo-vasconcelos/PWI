@@ -22,7 +22,7 @@ const router = new Router({
       }
     },
     {
-      path: '/actor/:id',
+      path: '/actor/:id-:name',
       name: 'actor',
       component: Actor,
       meta: {
@@ -30,7 +30,7 @@ const router = new Router({
       }
     },
     {
-      path: '/actor/:id/data',
+      path: '/actor/:id-:name/data',
       name: 'actorData',
       component: ActorData,
       meta: {
@@ -38,7 +38,7 @@ const router = new Router({
       }
     },
     {
-      path: '/actor/:id/movies',
+      path: '/actor/:id-:name/movies',
       name: 'actorMovies',
       component: ActorMovies,
       meta: {
