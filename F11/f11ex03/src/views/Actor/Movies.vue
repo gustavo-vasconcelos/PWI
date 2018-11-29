@@ -1,4 +1,4 @@
-<!--
+
 <template>
   <div class="container jumbotron text-left">
     <div class="row">
@@ -44,91 +44,97 @@
     </b-modal>
   </div>
 </template>
--->
 
+
+<!--
 <template>
-  <div class="container jumbotron text-left">
-    <div class="row">
-      <div
-        class="col-xl-3 col-md-4 col-sm-6 col-12"
-        v-for="movie in movieData"
-        :key="movie.imdbID"
-      >
-        <b-card
-          :title="`${movie.Title} (${movie.Year})`"
-          :img-src="movie.Poster"
-          :img-alt="movie.Title"
-          img-top
-          img-fluid
-          tag="article"
-          style="max-width: 20rem;"
-          class="mb-2 col-sm-6 ml-auto mr-auto p-0 actorMovie text-center"
-          @click="cardClicked(movie)"
-        ></b-card>
-      </div>
-    </div>
+	<div class="container jumbotron text-left">
+		<div class="row">
+			<div class="col-xl-3 col-md-4 col-sm-6 col-12" v-for="movie in $parent.movies" :key="movie.id">
 
-    <div class="text-center mt-2">
-      <router-link :to="`/actor/${$route.params.id}-${$route.params.name}`">Back</router-link>
-    </div>
+				<template
+					v-for="movieActorData in $parent.movieActor"
+					v-if="movieActorData.movieId === movie.tmdb && movieActorData.actorId === parseInt($route.params.id)"
+				>
+					<div :key="movieActorData.actorId">Filme</div>
 
-    <b-modal
-      :title="modal.title"
-      v-model="modal.show"
-      size="lg"
-      :hide-footer="true"
-      @hidden="clearModal()"
-    >
-      <b-embed
-        type="iframe"
-        aspect="16by9"
-        :src="'https://www.youtube.com/embed/' + modal.trailerId"
-        allowfullscreen
-      ></b-embed>
+				<b-card
+					:title="`${movie.title} (${movie.release_date.substr(0, 4)})`"
+					:img-src="'https://image.tmdb.org/t/p/w600_and_h900_bestv2' + movie.poster_path"
+					img-alt
+					img-top
+					img-fluid
+					tag="article"
+					style="max-width: 20rem;"
+					class="mb-2 col-sm-6 ml-auto mr-auto p-0 actorMovie text-center"
+					@click="cardClicked(movie)"
+				></b-card>
+			</div>
+		</div>
 
-    </b-modal>
-  </div>
+		<div class="text-center mt-2">
+			<router-link :to="`/actor/${$route.params.id}-${$route.params.name}`">Back</router-link>
+		</div>
+
+		<b-modal
+			:title="modal.title"
+			v-model="modal.show"
+			size="lg"
+			:hide-footer="true"
+			@hidden="clearModal()"
+		>
+			<b-embed
+				type="iframe"
+				aspect="16by9"
+				:src="'https://www.youtube.com/embed/' + modal.trailerId"
+				allowfullscreen
+			></b-embed>
+		</b-modal>
+	</div>
 </template>
+-->
 
 //https://image.tmdb.org/t/p/w600_and_h900_bestv2/IMAGEM_ID
 //https://api.themoviedb.org/3/person/ID_PESSOA?api_key=30a9bd883b54f8b08a0247941e2bbec5&language=en-US
 <script>
 export default {
-  data() {
-    return {
-      modal: {
-        show: false,
-        title: "",
-        trailerId: ""
-      },
-      movieData: [],
-      index: this.findIndexById(parseInt(this.$route.params.id))
-    };
-  },
-  created() {
-    let movies = JSON.parse(localStorage.movies);
-    let movieActor = JSON.parse(localStorage.movieActor);
-    let jsonData = [];
-    movies.forEach(movie => {
-      movieActor.forEach(movieAct => {
-        if (
-          movie.id === movieAct.movieId &&
-          movieAct.actorId === parseInt(this.$route.params.id)
-        ) {
-          fetch(`http://www.omdbapi.com/?i=${movie.imdb}&apikey=3eec600`)
-            .then(function(response) {
-              return response.json();
-            })
-            .then(function(myJson) {
-              myJson.TrailerId = movie.trailerId
-              jsonData.push(myJson);
-            });
-        }
-      });
-    });
-    this.movieData = jsonData;
-  },
-  /*
+	data() {
+		return {
+			modal: {
+				show: false,
+				title: "",
+				trailerId: ""
+			},
+			movieData: [],
+			index: this.findIndexById(parseInt(this.$route.params.id))
+		}
+	},
+	created() {
+		let movies = JSON.parse(localStorage.movies)
+		let movieActor = JSON.parse(localStorage.movieActor)
+		let jsonData = []
+		movies.forEach(movie => {
+			movieActor.forEach(movieAct => {
+				if (
+					movie.id === movieAct.movieId &&
+					movieAct.actorId === parseInt(this.$route.params.id)
+				) {
+					fetch(
+						`http://www.omdbapi.com/?i=${movie.imdb}&apikey=3eec600`
+					)
+						.then(function(response) {
+							return response.json()
+						})
+						.then(function(myJson) {
+							myJson.TrailerId = movie.trailerId
+							jsonData.push(myJson)
+						})
+				}
+			})
+		})
+		this.movieData = jsonData
+	},
+	/*
   beforeRouteEnter(to, from, next) {
     if (!localStorage.getItem("actorId")) {
       localStorage.actorId = to.params.id;
@@ -161,27 +167,27 @@ export default {
     next();
   },
   */
-  methods: {
-    findIndexById(id) {
-      return this.$parent.actors.findIndex(actor => actor.id === id);
-    },
-    cardClicked(movie) {
-      this.modal.show = true;
-      this.modal.trailerId = movie.TrailerId;
-      this.modal.title = `${movie.Title} (${movie.Year})`;
-    },
-    clearModal() {
-      this.modal.show = false;
-      this.modal.title = "";
-      this.modal.trailerId = "";
-    }
-  }
-};
+	methods: {
+		findIndexById(id) {
+			return this.$parent.actors.findIndex(actor => actor.id === id)
+		},
+		cardClicked(movie) {
+			this.modal.show = true
+			this.modal.trailerId = movie.TrailerId
+			this.modal.title = `${movie.Title} (${movie.Year})`
+		},
+		clearModal() {
+			this.modal.show = false
+			this.modal.title = ""
+			this.modal.trailerId = ""
+		}
+	}
+}
 </script>
 
 <style>
 .actorMovie:hover {
-  transform: scale(1.01) !important;
-  cursor: pointer;
+	transform: scale(1.01) !important;
+	cursor: pointer;
 }
 </style>

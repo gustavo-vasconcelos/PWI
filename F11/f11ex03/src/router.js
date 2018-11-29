@@ -5,7 +5,6 @@ import Actor from './views/Actor/Actor.vue'
 import ActorData from './views/Actor/Data.vue'
 import ActorMovies from './views/Actor/Movies.vue'
 import PageNotFound from './views/PageNotFound.vue'
-import AppVue from '@/App.vue'
 
 Vue.use(Router)
 
@@ -54,7 +53,7 @@ const router = new Router({
     }
   ]
 })
-
+/*
 router.afterEach(to => {
   if (to.path !== "/") {
     let index = AppVue.data().actors.findIndex(actor => actor.id === parseInt(to.params.id))
@@ -63,7 +62,7 @@ router.afterEach(to => {
     document.title = to.meta.title
   }
 })
-
+*/
 export default router
 
 

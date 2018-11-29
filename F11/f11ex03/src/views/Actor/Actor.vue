@@ -1,17 +1,17 @@
 <template>
-  <div class="about">
-    <router-link :to="`/actor/${$route.params.id}-${$route.params.name}/data`">
-      <h1>Personal data</h1>
-    </router-link>
-    <router-link :to="`/actor/${$route.params.id}-${$route.params.name}/movies`">
-      <h1>Movies list</h1>
-    </router-link>
-  </div>
+	<div class="about">
+		<router-link :to="{name: 'actorData', params: {id: $route.params.id, name: $route.params.name}}">
+			<h1>Personal data</h1>
+		</router-link>
+		<router-link :to="{name: 'actorMovies', params: {id: $route.params.id, name: $route.params.name}}">
+			<h1>Movies list</h1>
+		</router-link>
+	</div>
 </template>
 
 <script>
 export default {
-  /*
+	/*
   beforeRouteLeave(to, from, next) {
     if (to.name === "actorMovies") {
       if (this.$parent.moviesData.actorId !== to.params.id) {
@@ -30,5 +30,5 @@ export default {
     }
     next();
   }*/
-};
+}
 </script>
