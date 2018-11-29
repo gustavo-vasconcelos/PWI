@@ -12,50 +12,51 @@ export default {
   data() {
     return {
       actors: [
-        /*
         {
           id: 1,
-          /*
+
           name: "Bruce Willis",
           nationality: "Germany",
           dateBirth: "1955-03-19",
           photo:
             "https://pmcvariety.files.wordpress.com/2018/04/bruce-willis.jpg?w=1000",
           imdb: "nm0000246",
-          
+
           tmdb: 62
         },
         {
           id: 2,
-          /*
+
           name: "Leonardo DiCaprio",
           nationality: "United States",
           dateBirth: "1974-11-11",
           photo:
             "https://assets3.thrillist.com/v1/image/1656352/size/tmg-article_default_mobile.jpg",
           imdb: "nm0000138",
-          
+
           tmdb: 6193
         },
         {
           id: 3,
-          /*
           name: "Brad Pitt",
           nationality: "United States",
           dateBirth: "1963-12-18",
           photo:
             "https://postmediacanoe.files.wordpress.com/2018/11/brad-pitt.jpg",
           imdb: "nm0000093",
-          
+
           tmdb: 287
         }
-        */
       ],
       movies: [
         {
           id: 1,
           trailerId: "kg_jH47u480",
-          imdb: "tt0120591"
+          imdb: "tt0120591",
+          title: "Armageddon",
+          photo:
+            "https://m.media-amazon.com/images/M/MV5BMGM0NzE2YjgtZGQ4YS00MmY3LTg4ZDMtYjUwNTNiNTJhNTQ5XkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_.jpg",
+          year: 1998
         },
         {
           id: 2,
@@ -98,12 +99,17 @@ export default {
     getIndexById(id) {
       return this.actors.findIndex(actor => actor.id === id);
     },
-    getMostPopularActors() {
-      let jsonData = [];
-      //1-20
-      fetch(
+    async getMostPopularActors() {
+      const request = await fetch(
         "https://api.themoviedb.org/3/person/popular?api_key=30a9bd883b54f8b08a0247941e2bbec5&language=pt-PT&page=1"
-      )
+      );
+
+      const response = await request.json();
+      response.results.forEach(result => this.movies.push(result.known_for))
+      if(this.mostPopularActors)
+      this.mostPopularActors = response.results;
+
+      /*
         .then(response => response.json())
         .then(myJson => myJson.results.forEach(actor => jsonData.push(actor)));
       //21-40
@@ -112,25 +118,15 @@ export default {
       )
         .then(response => response.json())
         .then(myJson => myJson.results.forEach(actor => jsonData.push(actor)));
-  
-      jsonData.forEach((actor, index) => {
-        console.log(actor)
-        this.actors.push({ id: index, tmdb: actor.id, name: actor.name });
-      });
-
-      return jsonData;
-    },
-    processMostPopularActors() {
-      this.mostPopularActors.forEach((actor, index) => {
-        console.log(actor)
-        this.actors.push({ id: index, tmdb: actor.id, name: actor.name });
-      });
+      */
+      //return jsonData;
     }
   },
   created() {
+    this.mostPopularActors = this.getMostPopularActors();
+    /*
     if (!localStorage.mostPopularActors) {
       this.mostPopularActors = this.getMostPopularActors();
-      this.processMostPopularActors();
     }
     if (!localStorage.actors) {
     }
