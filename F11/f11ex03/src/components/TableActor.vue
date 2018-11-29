@@ -23,10 +23,6 @@ export default {
 					sortable: true
 				},
 				{
-					key: "nationality",
-					sortable: true
-				},
-				{
 					key: "actions"
 				}
 			]

@@ -9,13 +9,8 @@
 			style="max-width: 20rem;"
 			class="mb-2 ml-auto mr-auto"
 		>
-			<p class="card-text">Nationality: {{ $parent.actors[index].nationality }}</p>
-			<p class="card-text">Age: {{ $parent.getAgeById($parent.actors[index].id) }}</p>
-			<a
-				:href="'https://www.imdb.com/name/' + $parent.actors[index].imdb"
-				target="_blank"
-				class="btn btn-primary col-12"
-			>IMDB</a>
+		<br>
+		<b-button variant="primary" class="col-12" :href="'https://www.themoviedb.org/person/' + $parent.actors[index].tmdb" target="_blank">TMDB</b-button>
 		</b-card>
 		<div class="text-center">
 			<router-link :to="`/actor/${$route.params.id}-${$route.params.name}`">Back</router-link>

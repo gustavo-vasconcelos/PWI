@@ -8,27 +8,3 @@
 		</router-link>
 	</div>
 </template>
-
-<script>
-export default {
-	/*
-  beforeRouteLeave(to, from, next) {
-    if (to.name === "actorMovies") {
-      if (this.$parent.moviesData.actorId !== to.params.id) {
-        this.$parent.moviesData.actorId = to.params.id;
-        let imdbList = []
-        this.$parent.movieActor.forEach(movieActor => {
-          this.$parent.movies.forEach(movie => {
-            console.log(this.$parent.moviesData.actorId === movieActor.actorId)
-            if(movie.id === movieActor.movieId && this.$parent.moviesData.actorId === movieActor.actorId) {
-              imdbList.push(movie.imdb)
-            }
-          })
-        })
-        console.log(imdbList)
-      }
-    }
-    next();
-  }*/
-}
-</script>
